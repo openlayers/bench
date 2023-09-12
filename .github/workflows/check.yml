@@ -2,10 +2,18 @@ name: Sanity Check
 
 on:
   workflow_run:
-    workflows: [Test]
-    types: [completed]
+    workflows:
+      - Test
+    types:
+      - completed
+      - requested
+      - in_progress
 
 jobs:
+  always:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.event.workflow_run.action}}
   on-success:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
