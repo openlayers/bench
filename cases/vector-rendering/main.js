@@ -82,11 +82,11 @@ const countSelect = /** @type {HTMLSelectElement} */ (
 );
 countSelect.addEventListener('change', function () {
   link.update('count', countSelect.value);
-  main(parseInt(countSelect.value));
+  resetData(parseInt(countSelect.value));
 });
 
 const initialCount = link.track('count', (newCount) => {
-  main(parseInt(newCount));
+  resetData(parseInt(newCount));
 });
 if (initialCount) {
   countSelect.value = initialCount;
@@ -157,11 +157,19 @@ async function addFeatures(features) {
 /**
  * @param {number} count The number of features to create.
  */
-function main(count) {
+function resetData(count) {
   source.clear();
   const data = makeData(count);
   const features = parseFeatures(data);
   addFeatures(features);
+}
+
+function main() {
+  const count = initialCount
+    ? parseInt(initialCount)
+    : parseInt(countSelect.value);
+  resetData(count);
+
   if (initialRenderer === 'webgl') {
     useWebGL();
   } else {
@@ -169,4 +177,4 @@ function main(count) {
   }
 }
 
-main(initialCount ? parseInt(initialCount) : parseInt(countSelect.value));
+main();
