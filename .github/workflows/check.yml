@@ -1,0 +1,11 @@
+name: Sanity Check
+
+on:
+  workflow_run:
+    workflows: ["Build Preview"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "it works"
