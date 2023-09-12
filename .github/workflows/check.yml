@@ -3,6 +3,8 @@ name: Sanity Check
 on:
   workflow_run:
     workflows: ["Build Preview"]
+    types:
+      - completed
 
 jobs:
   check:
