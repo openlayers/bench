@@ -4,10 +4,6 @@ on:
   workflow_run:
     workflows:
       - Test
-    types:
-      - completed
-      - requested
-      - in_progress
 
 jobs:
   always:
