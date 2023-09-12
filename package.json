@@ -1,0 +1,27 @@
+{
+  "name": "bench",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint cases",
+    "typecheck": "tsc --pretty",
+    "test": "npm run lint && npm run typecheck",
+    "start": "vite dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openlayers/bench.git"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.10",
+    "eslint": "^8.49.0",
+    "eslint-config-openlayers": "^18.0.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  },
+  "dependencies": {
+    "ol": "^8.1.1-dev.1694517715322"
+  },
+  "eslintConfig": {
+    "extends": "openlayers"
+  }
+}
