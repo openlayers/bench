@@ -2,12 +2,17 @@ name: Sanity Check
 
 on:
   workflow_run:
-    workflows: ["Build Preview"]
-    types:
-      - completed
+    workflows: [Test]
+    types: [completed]
 
 jobs:
-  check:
+  on-success:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - run: echo "it works"
+      - run: echo 'The triggering workflow passed'
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'The triggering workflow failed'
