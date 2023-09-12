@@ -31,7 +31,7 @@ jobs:
         uses: actions/configure-pages@v3
 
       - name: Build Website
-        run: npm run build
+        run: npm run build -- --base /bench/
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
