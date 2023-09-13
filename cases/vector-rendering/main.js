@@ -162,6 +162,7 @@ function resetData(count) {
   const data = makeData(count);
   const features = parseFeatures(data);
   addFeatures(features);
+  console.time('first render');
 }
 
 function main() {
