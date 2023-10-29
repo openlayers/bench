@@ -144,7 +144,7 @@ function makeData(count, radius) {
 
 const format = new GeoJSON();
 /**
- * @param {import('geojson').FeatureCollection} data The GeoJSON data.
+ * @param {{features: Array<import('geojson').Feature>, type: string}} data The GeoJSON data.
  * @return {Array<import('ol/Feature.js').default>} The features.
  */
 function parseFeatures(data) {
@@ -167,6 +167,7 @@ async function addFeatures(features) {
  * @param {number} count The number of features to create.
  * @param {number} numVertices
  */
+
 function resetData(count, numVertices) {
   source.clear();
   const data = makeData(count, numVertices);

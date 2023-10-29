@@ -77,11 +77,13 @@ outlineCheckbox.onChange((/** @type {boolean} */ value) => {
   link.update('outline', value ? 'yes' : 'no');
   if (value) {
     style['stroke-width'] = 0.5;
+    style['stroke-color'] = 'gray';
   } else {
     delete style['stroke-width'];
+    delete style['stroke-color'];
   }
 
-  resetData(featureCountSlider.getValue(), verticesCount.getValue())
+  resetData(featureCountSlider.getValue(), verticesCount.getValue());
 
   if (gui_obj['Use WebGL']) {
     useWebGL();
@@ -113,8 +115,10 @@ const initialVertices = link.track('vertices', (newVertices) => {
 const initialOutline = link.track('outline', (newOutline) => {
   if (newOutline === 'yes') {
     style['stroke-width'] = 0.5;
+    style['stroke-color'] = 'gray';
   } else {
     delete style['stroke-width'];
+    delete style['stroke-color'];
   }
 });
 
@@ -190,7 +194,7 @@ function makeData(count, numVertices) {
 
 const format = new GeoJSON();
 /**
- * @param {import('geojson').FeatureCollection} data The GeoJSON data.
+ * @param {{features: Array<import('geojson').Feature>, type: string}} data The GeoJSON data.
  * @return {Array<import('ol/Feature.js').default>} The features.
  */
 function parseFeatures(data) {
@@ -213,6 +217,7 @@ async function addFeatures(features) {
  * @param {number} count The number of features to create.
  * @param {number} numVertices
  */
+
 function resetData(count, numVertices) {
   source.clear();
   const data = makeData(count, numVertices);
@@ -222,8 +227,9 @@ function resetData(count, numVertices) {
 }
 
 function main() {
-
-  const count = initialCount ? parseInt(initialCount) : parseInt(featureCountSlider.getValue());
+  const count = initialCount
+    ? parseInt(initialCount)
+    : parseInt(featureCountSlider.getValue());
   const vertices = initialVertices
     ? parseInt(initialVertices)
     : parseInt(verticesCount.getValue());
@@ -233,8 +239,10 @@ function main() {
 
   if (gui_obj.Outline) {
     style['stroke-width'] = 0.5;
+    style['stroke-color'] = 'gray';
   } else {
     delete style['stroke-width'];
+    delete style['stroke-color'];
   }
 
   resetData(count, vertices);
