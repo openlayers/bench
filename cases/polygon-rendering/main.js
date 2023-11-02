@@ -29,6 +29,10 @@ const gui = new GUI();
 
 const link = new Link();
 
+/**
+ *
+ * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/literal.js').LiteralStyle}
+ */
 const style = {
   'fill-color': ['get', 'color'],
   'stroke-color': 'gray',
@@ -241,8 +245,12 @@ function main() {
     style['stroke-width'] = 0.5;
     style['stroke-color'] = 'gray';
   } else {
-    delete style['stroke-width'];
-    delete style['stroke-color'];
+    if (style['stroke-width'] !== undefined) {
+      delete style['stroke-width'];
+    }
+    if (style['stroke-color'] !== undefined) {
+      delete style['stroke-color'];
+    }
   }
 
   resetData(count, vertices);

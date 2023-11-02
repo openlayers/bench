@@ -29,7 +29,12 @@ const gui = new GUI();
 
 const link = new Link();
 
+/**
+ * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/literal.js').LiteralStyle}
+ */
 const style = {
+  // This has to be fixed upstream
+  // @ts-ignore
   'circle-radius': ['get', 'radius'],
   'circle-fill-color': ['get', 'color'],
   'circle-stroke-color': 'gray',
