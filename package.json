@@ -21,7 +21,7 @@
     "vite": "^4.4.9"
   },
   "dependencies": {
-    "ol": "^8.1.1-dev.1694517715322"
+    "ol": "^9.0.0-dev.1699632465847"
   },
   "eslintConfig": {
     "extends": "openlayers"
