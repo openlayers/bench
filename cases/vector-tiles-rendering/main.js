@@ -178,7 +178,7 @@ function makeData(count, numVertices, bbox) {
     }
   }
 
-  const curveComplexity = 4;
+  const curveComplexity = 6;
   const periodCount = 10;
   const periodWidth = width / periodCount;
   const periodHeight = height / 10;
@@ -193,7 +193,7 @@ function makeData(count, numVertices, bbox) {
     const coordinates = [];
     for (let i = 0; i < periodCount; i++) {
       const startLon = bbox[0] + i * periodWidth;
-      const startLat = centerLat + 5 + (j + 1) * latitudeSpacing; // Change the starting latitude to be above the center
+      const startLat = centerLat + 7 + (j + 1) * latitudeSpacing; // Change the starting latitude to be above the center
 
       singleCurve = []; // Clear the array
 
