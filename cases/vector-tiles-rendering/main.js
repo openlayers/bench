@@ -50,11 +50,12 @@ const style = {
 
 const gui_obj = {
   'Use WebGL': false,
-  'Feature count': 1000,
+  'Feature count': 500,
+  'Toggle Performance Tracking': false, // New property for the performance tracking button
 };
 
 const useWebGLCheckbox = gui.add(gui_obj, 'Use WebGL');
-const featureCountSlider = gui.add(gui_obj, 'Feature count', 1000, 20000, 500);
+const featureCountSlider = gui.add(gui_obj, 'Feature count', 500, 10000, 500);
 
 useWebGLCheckbox.onChange((/** @type {boolean} */ value) => {
   if (value) {
@@ -114,12 +115,14 @@ function useCanvas() {
 }
 
 /**
- * @param {number} count
  * @param {number} numVertices
- * @param {[number, number, number, number]} bbox
+ * @param {any} bbox
+ * @param {any} countPoints
+ * @param {number} countPolygons
+ * @param {number | import("ol/extent.js").Extent} countLines
  */
 
-function makeData(count, numVertices, bbox) {
+function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
   /**
    * @type {Array<import('geojson').Feature>}
    */
@@ -128,10 +131,13 @@ function makeData(count, numVertices, bbox) {
   const height = bbox[3] - bbox[1];
   const centerLon = bbox[0] + width / 2;
   const centerLat = bbox[1] + height / 2;
-  // const size = 400 / Math.floor(Math.sqrt(count / 2)); // Increase the size for larger polygons
-  const size = width / Math.floor(Math.sqrt(count / 2)); // Increase the size for larger polygons
 
-  // Generate polygons on the left below corner
+  // Calculate the size based on the count and the bounding box area
+  const size = Math.sqrt(
+    (width * height) / (countPoints + countPolygons + countLines)
+  );
+
+  // Generate polygons on the left bottom corner
   for (let lon = bbox[0]; lon < centerLon; lon += size) {
     for (let lat = bbox[1]; lat < centerLat; lat += size) {
       const buffer = (0.3 + Math.random() * 0.2) * size;
@@ -160,7 +166,7 @@ function makeData(count, numVertices, bbox) {
     }
   }
 
-  // Generate points on the right below corner
+  // Generate points on the right top corner
   for (let lon = centerLon; lon < bbox[2]; lon += size) {
     for (let lat = bbox[1]; lat < centerLat; lat += size) {
       const point = [lon + size / 2, lat + size / 2];
@@ -182,14 +188,14 @@ function makeData(count, numVertices, bbox) {
   const periodCount = 10;
   const periodWidth = width / periodCount;
   const periodHeight = height / 10;
-  const latitudeSpacing = height / (count + 1);
+  const latitudeSpacing = height / (countLines + 1);
 
   /**
    * @type {Array<any>}
    */
   let singleCurve = []; // Create a singleCurve array outside the loop
 
-  for (let j = 0; j < count; j++) {
+  for (let j = 0; j < countLines; j++) {
     const coordinates = [];
     for (let i = 0; i < periodCount; i++) {
       const startLon = bbox[0] + i * periodWidth;
@@ -230,11 +236,20 @@ function makeData(count, numVertices, bbox) {
 
 function tileLoadFunction(tile) {
   // source.clear();
-  const count = featureCountSlider.getValue();
+  const totalFeatureCount = featureCountSlider.getValue();
+  const countPoints = Math.floor(totalFeatureCount / 3);
+  const countPolygons = Math.floor(totalFeatureCount / 3);
+  const countLines = totalFeatureCount - countPoints - countPolygons;
   let extent = source.getTileGrid().getTileCoordExtent(tile.tileCoord);
   extent = transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
   const numVertices = 5;
-  const data = makeData(count, numVertices, extent);
+  const data = makeData(
+    countPoints,
+    countPolygons,
+    countLines,
+    numVertices,
+    extent
+  );
   const features = format.readFeatures(data);
   tile.setFeatures(features);
 }
