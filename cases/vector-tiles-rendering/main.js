@@ -23,7 +23,8 @@ const map = new Map({
 
 const source = new VectorTileSource({
   url: '{z}/{x}/{y}',
-  tileLoadFunction: tileLoadFunction,
+  // @ts-ignore
+  tileLoadFunction: (tile) => tileLoadFunction(tile),
   maxZoom: 15,
 });
 
@@ -36,12 +37,13 @@ const gui = new GUI();
 const link = new Link();
 
 /**
+ *
  * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/literal.js').LiteralStyle}
  */
 const style = {
   'fill-color': ['get', 'color'],
   'stroke-color': ['get', 'color'],
-  'stroke-width': 1,
+  'stroke-width': 2,
   'circle-radius': 7,
   'circle-fill-color': ['get', 'color'],
   'circle-stroke-color': 'gray',
@@ -57,25 +59,23 @@ const gui_obj = {
 const useWebGLCheckbox = gui.add(gui_obj, 'Use WebGL');
 const featureCountSlider = gui.add(gui_obj, 'Feature count', 500, 10000, 500);
 
-useWebGLCheckbox.onChange((/** @type {boolean} */ value) => {
-  if (value) {
-    link.update('renderer', 'webgl');
-    useWebGL();
-  } else {
-    link.update('renderer', 'canvas');
-    useCanvas();
-  }
+useWebGLCheckbox.onChange((/** @type {any} */ value) => {
+  link.update('renderer', value ? 'webgl' : 'canvas');
+  value ? useWebGL() : useCanvas();
 });
 
 featureCountSlider.onFinishChange(() => {
   link.update('count', featureCountSlider.getValue());
-  if (gui_obj['Use WebGL']) {
-    useWebGL();
-  }
   source.refresh();
+  // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
+  // @ts-ignore
+  source.setKey(Date.now().toString());
 });
 
 const initialCount = link.track('count', (newCount) => {
+  // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
+  // @ts-ignore
+  source.setKey(Date.now().toString());
   source.refresh();
 });
 
@@ -90,6 +90,10 @@ const initialRenderer = link.track('renderer', (newRenderer) => {
     useWebGLCheckbox.listen();
   }
 });
+
+/**
+ * @extends {BaseTileLayer<VectorTileSource, WebGLVectorTileLayerRenderer>}
+ */
 
 class WebGLVectorTileLayer extends BaseTileLayer {
   createRenderer() {
@@ -109,6 +113,7 @@ function useCanvas() {
   map.addLayer(
     new VectorTileLayer({
       source,
+      // @ts-ignore
       style: style,
     })
   );
@@ -119,7 +124,7 @@ function useCanvas() {
  * @param {any} bbox
  * @param {any} countPoints
  * @param {number} countPolygons
- * @param {number | import("ol/extent.js").Extent} countLines
+ * @param {number} countLines
  */
 
 function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
@@ -184,8 +189,8 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
     }
   }
 
-  const curveComplexity = 6;
-  const periodCount = 10;
+  const curveComplexity = 2;
+  const periodCount = 6;
   const periodWidth = width / periodCount;
   const periodHeight = height / 10;
   const latitudeSpacing = height / (countLines + 1);
@@ -240,7 +245,10 @@ function tileLoadFunction(tile) {
   const countPoints = Math.floor(totalFeatureCount / 3);
   const countPolygons = Math.floor(totalFeatureCount / 3);
   const countLines = totalFeatureCount - countPoints - countPolygons;
-  let extent = source.getTileGrid().getTileCoordExtent(tile.tileCoord);
+  const tileGrid = source.getTileGrid();
+  let extent = tileGrid
+    ? tileGrid.getTileCoordExtent(tile.tileCoord)
+    : [0, 0, 0, 0];
   extent = transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
   const numVertices = 5;
   const data = makeData(
@@ -255,10 +263,9 @@ function tileLoadFunction(tile) {
 }
 
 function main() {
-  const count = initialCount
+  gui_obj['Feature count'] = initialCount
     ? parseInt(initialCount)
     : parseInt(featureCountSlider.getValue());
-  gui_obj['Feature count'] = count;
   featureCountSlider.listen();
   gui_obj['Use WebGL'] = initialRenderer === 'webgl';
   useWebGLCheckbox.listen();
