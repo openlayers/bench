@@ -138,22 +138,21 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
   const centerLat = bbox[1] + height / 2;
 
   // Calculate the size based on the count and the bounding box area
-  const size = Math.sqrt(
-    (width * height) / (countPoints + countPolygons + countLines)
-  );
+  const gridSpacing =
+      (width + height) / 4 / (Math.ceil(Math.sqrt(countPoints)) + 1);
 
   // Generate polygons on the left bottom corner
-  for (let lon = bbox[0]; lon < centerLon; lon += size) {
-    for (let lat = bbox[1]; lat < centerLat; lat += size) {
-      const buffer = (0.3 + Math.random() * 0.2) * size;
+  for (let lon = bbox[0] + gridSpacing; lon < centerLon; lon += gridSpacing) {
+    for (let lat = bbox[1] + gridSpacing; lat < centerLat; lat += gridSpacing) {
+      const buffer = (0.3 + Math.random() * 0.2) * gridSpacing;
 
       const angleStep = (2 * Math.PI) / numVertices;
 
       const polygonCoordinates = [];
       for (let i = 0; i < numVertices; i++) {
         const angle = i * angleStep;
-        const x = lon + size / 2 + buffer * Math.cos(angle);
-        const y = lat + size / 2 + buffer * Math.sin(angle);
+        const x = lon + buffer * Math.cos(angle);
+        const y = lat + buffer * Math.sin(angle);
         polygonCoordinates.push([x, y]);
       }
       polygonCoordinates.push(polygonCoordinates[0]);
@@ -171,10 +170,28 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
     }
   }
 
+  // outer boundary
+  features.push({
+    type: 'Feature',
+    properties: {
+      color: colors[Math.floor(Math.random() * colors.length)],
+    },
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [bbox[0], bbox[1]],
+        [bbox[2], bbox[1]],
+        [bbox[2], bbox[3]],
+        [bbox[0], bbox[3]],
+        [bbox[0], bbox[1]],
+      ],
+    },
+  });
+
   // Generate points on the right top corner
-  for (let lon = centerLon; lon < bbox[2]; lon += size) {
-    for (let lat = bbox[1]; lat < centerLat; lat += size) {
-      const point = [lon + size / 2, lat + size / 2];
+  for (let lon = centerLon + gridSpacing; lon < bbox[2]; lon += gridSpacing) {
+    for (let lat = bbox[1] + gridSpacing; lat < centerLat; lat += gridSpacing) {
+      const point = [lon, lat];
 
       features.push({
         type: 'Feature',
@@ -191,9 +208,9 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
 
   const curveComplexity = 2;
   const periodCount = 6;
-  const periodWidth = width / periodCount;
-  const periodHeight = height / 10;
-  const latitudeSpacing = height / (countLines + 1);
+  const periodWidth = (width - gridSpacing * 2) / periodCount;
+  const periodHeight = height / 20;
+  const latitudeSpacing = (height / 2 - periodHeight * 2) / countLines;
 
   /**
    * @type {Array<any>}
@@ -203,8 +220,8 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
   for (let j = 0; j < countLines; j++) {
     const coordinates = [];
     for (let i = 0; i < periodCount; i++) {
-      const startLon = bbox[0] + i * periodWidth;
-      const startLat = centerLat + 7 + (j + 1) * latitudeSpacing; // Change the starting latitude to be above the center
+      const startLon = bbox[0] + i * periodWidth + gridSpacing;
+      const startLat = centerLat + periodHeight + j * latitudeSpacing; // Change the starting latitude to be above the center
 
       singleCurve = []; // Clear the array
 
@@ -212,7 +229,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
         const ratio = i / curveComplexity;
         const longitude = startLon + ratio * periodWidth;
         const latitude =
-          startLat + Math.cos(ratio * Math.PI * 2) * periodHeight * 0.5;
+            startLat + Math.cos(ratio * Math.PI * 2) * periodHeight * 0.5;
         singleCurve = singleCurve.concat([[longitude, latitude]]);
       }
       coordinates.push(...singleCurve);
