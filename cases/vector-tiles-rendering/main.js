@@ -139,7 +139,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
 
   // Calculate the size based on the count and the bounding box area
   const gridSpacing =
-      (width + height) / 4 / (Math.ceil(Math.sqrt(countPoints)) + 1);
+    (width + height) / 4 / (Math.ceil(Math.sqrt(countPoints)) + 1);
 
   // Generate polygons on the left bottom corner
   for (let lon = bbox[0] + gridSpacing; lon < centerLon; lon += gridSpacing) {
@@ -229,7 +229,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
         const ratio = i / curveComplexity;
         const longitude = startLon + ratio * periodWidth;
         const latitude =
-            startLat + Math.cos(ratio * Math.PI * 2) * periodHeight * 0.5;
+          startLat + Math.cos(ratio * Math.PI * 2) * periodHeight * 0.5;
         singleCurve = singleCurve.concat([[longitude, latitude]]);
       }
       coordinates.push(...singleCurve);
