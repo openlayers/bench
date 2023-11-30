@@ -1,13 +1,26 @@
 /* eslint-disable no-console */
+import BuilderGroup from 'ol/render/canvas/BuilderGroup.js';
+import CanvasVectorLayerRenderer from 'ol/renderer/canvas/VectorLayer.js';
+import CompositeMapRenderer from 'ol/renderer/Composite.js';
+import ExecutorGroup from 'ol/render/canvas/ExecutorGroup.js';
 import GUI from 'lil-gui';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import Layer from 'ol/layer/Layer.js';
 import Link from 'ol/interaction/Link.js';
 import Map from 'ol/Map.js';
+import MixedGeometryBatch from 'ol/render/webgl/MixedGeometryBatch.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
+import VectorStyleRenderer from 'ol/render/webgl/VectorStyleRenderer.js';
 import View from 'ol/View.js';
 import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer.js';
+import {
+  defineFrameContainer,
+  showGraph,
+  showTable,
+  trackPerformance,
+  // @ts-ignore
+} from '@camptocamp/rendering-analyzer';
 import {useGeographic} from 'ol/proj.js';
 
 useGeographic();
@@ -44,12 +57,14 @@ const gui_obj = {
   'Use WebGL': false,
   'Vertices': 4,
   'Outline': true,
+  'Performance Tracking': false,
 };
 
 const useWebGLCheckbox = gui.add(gui_obj, 'Use WebGL');
 const featureCountSlider = gui.add(gui_obj, 'Feature count', 100000, 500000);
 const verticesCount = gui.add(gui_obj, 'Vertices', 3, 20, 1);
 const outlineCheckbox = gui.add(gui_obj, 'Outline');
+const togglePerformanceTracking = gui.add(gui_obj, 'Performance Tracking');
 
 useWebGLCheckbox.onChange((/** @type {boolean} */ value) => {
   if (value) {
@@ -58,6 +73,9 @@ useWebGLCheckbox.onChange((/** @type {boolean} */ value) => {
   } else {
     link.update('renderer', 'canvas');
     useCanvas();
+  }
+  if (gui_obj['Performance Tracking']) {
+    location.reload();
   }
 });
 
@@ -96,6 +114,15 @@ outlineCheckbox.onChange((/** @type {boolean} */ value) => {
   }
 });
 
+togglePerformanceTracking.onChange((/** @type {any} */ value) => {
+  link.update('performance', value ? 'yes' : 'no');
+  if (value === 'yes') {
+    enablePerformanceTracking(gui_obj['Use WebGL']);
+  } else {
+    location.reload();
+  }
+});
+
 const initialRenderer = link.track('renderer', (newRenderer) => {
   if (newRenderer === 'webgl') {
     gui_obj['Use WebGL'] = true;
@@ -123,6 +150,16 @@ const initialOutline = link.track('outline', (newOutline) => {
   } else {
     delete style['stroke-width'];
     delete style['stroke-color'];
+  }
+});
+
+const initialPerformance = link.track('performance', (newPerformance) => {
+  if (newPerformance === 'yes') {
+    gui_obj['Performance Tracking'] = true;
+    togglePerformanceTracking.listen();
+  } else {
+    gui_obj['Performance Tracking'] = false;
+    togglePerformanceTracking.listen();
   }
 });
 
@@ -230,6 +267,27 @@ function resetData(count, numVertices) {
   console.time('first render');
 }
 
+/**
+ * @param {boolean} useWebGL
+ */
+
+function enablePerformanceTracking(useWebGL) {
+  defineFrameContainer(CompositeMapRenderer, 'renderFrame');
+  trackPerformance(VectorSource);
+  if (useWebGL) {
+    trackPerformance(MixedGeometryBatch);
+    trackPerformance(VectorStyleRenderer);
+    trackPerformance(WebGLVectorLayerRenderer);
+  } else {
+    trackPerformance(BuilderGroup);
+    trackPerformance(ExecutorGroup);
+    trackPerformance(CanvasVectorLayerRenderer);
+    trackPerformance(VectorLayer);
+  }
+  showTable();
+  showGraph();
+}
+
 function main() {
   const count = initialCount
     ? parseInt(initialCount)
@@ -262,6 +320,15 @@ function main() {
 
   gui_obj['Use WebGL'] = initialRenderer === 'webgl';
   useWebGLCheckbox.listen();
+
+  if (initialPerformance === 'yes') {
+    gui_obj['Performance Tracking'] = true;
+    togglePerformanceTracking.listen();
+    enablePerformanceTracking(gui_obj['Use WebGL']);
+  } else {
+    gui_obj['Performance Tracking'] = false;
+    togglePerformanceTracking.listen();
+  }
 
   if (gui_obj['Use WebGL']) {
     useWebGL();
