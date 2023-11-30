@@ -1,13 +1,27 @@
 /* eslint-disable no-console */
 import BaseTileLayer from 'ol/layer/BaseTile.js';
+import BuilderGroup from 'ol/render/canvas/BuilderGroup.js';
+import CanvasVectorTileLayerRenderer from 'ol/renderer/canvas/VectorTileLayer.js';
+import CompositeMapRenderer from 'ol/renderer/Composite.js';
+import ExecutorGroup from 'ol/render/canvas/ExecutorGroup.js';
 import GUI from 'lil-gui';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import Link from 'ol/interaction/Link.js';
 import Map from 'ol/Map.js';
+import MixedGeometryBatch from 'ol/render/webgl/MixedGeometryBatch.js';
+import TileGeometry from 'ol/webgl/TileGeometry.js';
+import VectorStyleRenderer from 'ol/render/webgl/VectorStyleRenderer.js';
 import VectorTileLayer from 'ol/layer/VectorTile.js';
 import VectorTileSource from 'ol/source/VectorTile.js';
 import View from 'ol/View.js';
 import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer.js';
+import {
+  defineFrameContainer,
+  showGraph,
+  showTable,
+  trackPerformance,
+  // @ts-ignore
+} from '@camptocamp/rendering-analyzer';
 import {transformExtent, useGeographic} from 'ol/proj.js';
 
 useGeographic();
@@ -53,15 +67,19 @@ const style = {
 const gui_obj = {
   'Use WebGL': false,
   'Feature count': 500,
-  'Toggle Performance Tracking': false, // New property for the performance tracking button
+  'Performance Tracking': false,
 };
 
 const useWebGLCheckbox = gui.add(gui_obj, 'Use WebGL');
 const featureCountSlider = gui.add(gui_obj, 'Feature count', 500, 10000, 500);
+const togglePerformanceTracking = gui.add(gui_obj, 'Performance Tracking');
 
 useWebGLCheckbox.onChange((/** @type {any} */ value) => {
   link.update('renderer', value ? 'webgl' : 'canvas');
   value ? useWebGL() : useCanvas();
+  if (gui_obj['Performance Tracking']) {
+    location.reload();
+  }
 });
 
 featureCountSlider.onFinishChange(() => {
@@ -70,6 +88,15 @@ featureCountSlider.onFinishChange(() => {
   // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
   // @ts-ignore
   source.setKey(Date.now().toString());
+});
+
+togglePerformanceTracking.onChange((/** @type {any} */ value) => {
+  link.update('performance', value ? 'yes' : 'no');
+  if (value === 'yes') {
+    enablePerformanceTracking(gui_obj['Use WebGL']);
+  } else {
+    location.reload();
+  }
 });
 
 const initialCount = link.track('count', (newCount) => {
@@ -90,6 +117,18 @@ const initialRenderer = link.track('renderer', (newRenderer) => {
     useWebGLCheckbox.listen();
   }
 });
+
+const initialPerformance = link.track('performance', (newPerformance) => {
+  if (newPerformance === 'yes') {
+    gui_obj['Performance Tracking'] = true;
+    togglePerformanceTracking.listen();
+  } else {
+    gui_obj['Performance Tracking'] = false;
+    togglePerformanceTracking.listen();
+  }
+});
+
+map.addInteraction(link);
 
 /**
  * @extends {BaseTileLayer<VectorTileSource, WebGLVectorTileLayerRenderer>}
@@ -279,6 +318,28 @@ function tileLoadFunction(tile) {
   tile.setFeatures(features);
 }
 
+/**
+ * @param {any} useWebGL
+ */
+
+function enablePerformanceTracking(useWebGL) {
+  defineFrameContainer(CompositeMapRenderer, 'renderFrame');
+  trackPerformance(VectorTileSource);
+  if (useWebGL) {
+    trackPerformance(TileGeometry);
+    trackPerformance(MixedGeometryBatch);
+    trackPerformance(VectorStyleRenderer);
+    trackPerformance(WebGLVectorTileLayerRenderer);
+  } else {
+    trackPerformance(BuilderGroup);
+    trackPerformance(ExecutorGroup);
+    trackPerformance(CanvasVectorTileLayerRenderer);
+    trackPerformance(VectorTileLayer);
+  }
+  showTable();
+  showGraph();
+}
+
 function main() {
   gui_obj['Feature count'] = initialCount
     ? parseInt(initialCount)
@@ -286,6 +347,15 @@ function main() {
   featureCountSlider.listen();
   gui_obj['Use WebGL'] = initialRenderer === 'webgl';
   useWebGLCheckbox.listen();
+
+  if (initialPerformance === 'yes') {
+    gui_obj['Performance Tracking'] = true;
+    togglePerformanceTracking.listen();
+    enablePerformanceTracking(gui_obj['Use WebGL']);
+  } else {
+    gui_obj['Performance Tracking'] = false;
+    togglePerformanceTracking.listen();
+  }
 
   if (gui_obj['Use WebGL']) {
     useWebGL();
