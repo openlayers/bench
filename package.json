@@ -18,7 +18,7 @@
     "eslint-config-openlayers": "^18.0.0",
     "lil-gui": "^0.19.1",
     "typescript": "^5.2.2",
-    "vite": "^4.4.9"
+    "vite": "^5.0.4"
   },
   "dependencies": {
     "ol": "^8.1.1-dev.1694517715322"
