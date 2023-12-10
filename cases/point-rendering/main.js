@@ -43,7 +43,7 @@ const gui = new GUI();
 const link = new Link();
 
 /**
- * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/literal.js').LiteralStyle}
+ * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/webgl.js').WebGLStyle}
  */
 const style = {
   // This has to be fixed upstream

@@ -47,7 +47,7 @@ const link = new Link();
 
 /**
  *
- * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/literal.js').LiteralStyle}
+ * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/webgl.js').WebGLStyle}
  */
 const style = {
   'stroke-width': ['get', 'width'],
