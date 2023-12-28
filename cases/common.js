@@ -373,6 +373,7 @@ function enablePerformanceTracking(useWebGL) {
   }
   showTable();
   showGraph();
+  /** @type {HTMLDivElement} */ (gui.domElement).style.right = '430px';
 }
 
 export function initializeGui() {
