@@ -418,13 +418,11 @@ function animate() {
     {
       center: [initialCenter[0] + 40, initialCenter[1]],
       duration: 2000,
-      easing: linear,
     },
     // Pan back to the initial center
     {
       center: initialCenter,
       duration: 2000,
-      easing: linear,
     },
     {
       rotation: initialRotation + Math.PI / 2,
