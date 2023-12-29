@@ -27,7 +27,6 @@ import {
   trackPerformance,
   // @ts-ignore
 } from '@camptocamp/rendering-analyzer';
-import {easeIn, linear} from 'ol/easing.js';
 import {useGeographic} from 'ol/proj.js';
 
 useGeographic();
