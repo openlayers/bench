@@ -383,54 +383,53 @@ function enablePerformanceTracking(useWebGL) {
 
 function animate() {
   const view = map.getView();
-  const initialRotation = view.getRotation();
-  const initialZoom = view.getZoom();
-  const initialCenter = view.getCenter();
 
-  if (!initialCenter) {
-    console.error('initialCenter is undefined');
-    return;
-  }
+  const initialRotation = 0;
+  const initialZoom = 4;
+  const initialCenter = [0, 0];
 
-  // Rotate the view to the left
-  view.animate(
-    {
-      rotation: initialRotation + Math.PI / 2,
-      duration: 2000,
-    },
-    {
-      rotation: initialRotation - Math.PI / 2,
-      duration: 2000,
-    },
-    {
-      zoom: 5,
-      duration: 2000,
-    },
-    {
-      zoom: 10,
-      duration: 2000,
-    },
-    {
-      zoom: initialZoom,
-      duration: 2000,
-    },
-    // Pan to the right
-    {
-      center: [initialCenter[0] + 40, initialCenter[1]],
-      duration: 2000,
-    },
-    // Pan back to the initial center
-    {
-      center: initialCenter,
-      duration: 2000,
-    },
-    {
-      rotation: initialRotation + Math.PI / 2,
-    },
-    {
-      rotation: initialRotation - Math.PI / 2,
-    }
-  );
+  view.setRotation(initialRotation);
+  view.setZoom(initialZoom);
+  view.setCenter(initialCenter);
+
+  setTimeout(() => {
+    view.animate(
+      {
+        rotation: initialRotation + Math.PI / 2,
+        duration: 2000,
+      },
+      {
+        rotation: initialRotation - Math.PI / 2,
+        duration: 2000,
+      },
+      {
+        zoom: 5,
+        duration: 2000,
+      },
+      {
+        zoom: 10,
+        duration: 2000,
+      },
+      {
+        zoom: initialZoom,
+        duration: 2000,
+      },
+      {
+        center: [initialCenter[0] + 40, initialCenter[1]],
+        duration: 2000,
+      },
+      {
+        center: initialCenter,
+        duration: 2000,
+      },
+      {
+        rotation: initialRotation + Math.PI / 2,
+      },
+      {
+        rotation: initialRotation - Math.PI / 2,
+      }
+    );
+  }, 1000);
 }
 
 export function initializeGui() {
