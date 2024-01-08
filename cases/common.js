@@ -379,6 +379,7 @@ function enablePerformanceTracking(useWebGL) {
   }
   showTable();
   showGraph();
+  /** @type {HTMLDivElement} */ (gui.domElement).style.right = '430px';
 }
 
 function animate() {

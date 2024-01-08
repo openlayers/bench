@@ -21,7 +21,7 @@
     "vite": "^5.0.4"
   },
   "dependencies": {
-    "@camptocamp/rendering-analyzer": "^0.1.1",
+    "@camptocamp/rendering-analyzer": "^0.2.0",
     "ol": "^9.0.0-dev.1702043722356"
   },
   "eslintConfig": {
