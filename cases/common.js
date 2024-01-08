@@ -268,7 +268,7 @@ export function generateLines(lineCount, curveComplexity, width) {
 
 const gui = new GUI();
 
-/** @type {Record<string, boolean|number>} */
+/** @type {Record<string, boolean|number|function(): void>} */
 const guiParams = {};
 
 /**
@@ -277,8 +277,8 @@ const guiParams = {};
  * @param {string} id Id
  * @param {string} label Label
  * @param {Array<string>|Array<number>} values Either two string values for true/false, or two numbers defining a range
- * @param {boolean|number} defaultValue Default value
- * @param {function(boolean|number, boolean): void} callback Called when the parameter changes, and also on initialization
+ * @param {boolean|number|function(): void} defaultValue Default value
+ * @param {function(boolean|number|function(): void, boolean|null): void} callback Called when the parameter changes, and also on initialization
  * First argument is the current value, second argument is true if this is the initial call
  */
 export function registerGuiParameter(
@@ -290,6 +290,7 @@ export function registerGuiParameter(
 ) {
   let controller;
   const isNumeric = typeof values[0] === 'number';
+  const isFunction = typeof defaultValue === 'function';
 
   const initialLinkValue = link.track(id, (value) => {
     callback(isNumeric ? parseFloat(value) : value === values[0], false);
@@ -301,7 +302,10 @@ export function registerGuiParameter(
       : initialLinkValue === values[0];
   }
 
-  if (isNumeric) {
+  if (isFunction) {
+    guiParams[id] = defaultValue;
+    controller = gui.add(guiParams, id);
+  } else if (isNumeric) {
     guiParams[id] = initialValue;
     const numericValues = /** @type {Array<number>} */ (values);
     controller = gui.add(
@@ -320,7 +324,9 @@ export function registerGuiParameter(
   controller.name(label);
   controller.listen();
 
-  if (isNumeric) {
+  if (isFunction) {
+    // No need to track function parameters in the URL or call a callback when they change
+  } else if (isNumeric) {
     controller.onFinishChange((/** @type {number} */ rawValue) => {
       link.update(id, rawValue.toString());
       callback(rawValue, false);
@@ -336,7 +342,7 @@ export function registerGuiParameter(
 
 /**
  * @param {string} id Parameter id
- * @return {number|boolean} Current value
+ * @return {number|boolean|function(): void} Current value
  */
 export function getGuiParameterValue(id) {
   return guiParams[id];
@@ -375,7 +381,59 @@ function enablePerformanceTracking(useWebGL) {
   showGraph();
 }
 
+function animate() {
+  const view = map.getView();
+
+  const initialRotation = 0;
+  const initialZoom = 4;
+  const initialCenter = [0, 0];
+
+  view.setRotation(initialRotation);
+  view.setZoom(initialZoom);
+  view.setCenter(initialCenter);
+
+  setTimeout(() => {
+    view.animate(
+      {
+        rotation: initialRotation + Math.PI / 2,
+        duration: 2000,
+      },
+      {
+        rotation: initialRotation - Math.PI / 2,
+        duration: 2000,
+      },
+      {
+        zoom: 5,
+        duration: 2000,
+      },
+      {
+        zoom: 10,
+        duration: 2000,
+      },
+      {
+        zoom: initialZoom,
+        duration: 2000,
+      },
+      {
+        center: [initialCenter[0] + 40, initialCenter[1]],
+        duration: 2000,
+      },
+      {
+        center: initialCenter,
+        duration: 2000,
+      },
+      {
+        rotation: initialRotation + Math.PI / 2,
+      },
+      {
+        rotation: initialRotation - Math.PI / 2,
+      }
+    );
+  }, 1000);
+}
+
 export function initializeGui() {
+  registerGuiParameter('animate', 'Start Animation', [], animate, () => {});
   registerGuiParameter(
     'renderer',
     'Use WebGL',
