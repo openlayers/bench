@@ -37,7 +37,7 @@ function main() {
     },
     (map) => {
       map.addLayer(new VectorLayer({source, style}));
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -51,9 +51,9 @@ function main() {
       }
       resetData(
         /** @type {number} */ (value),
-        /** @type {number} */ (getGuiParameterValue('vertices'))
+        /** @type {number} */ (getGuiParameterValue('vertices')),
       );
-    }
+    },
   );
   registerGuiParameter(
     'vertices',
@@ -66,9 +66,9 @@ function main() {
       }
       resetData(
         /** @type {number} */ (getGuiParameterValue('count')),
-        /** @type {number} */ (value)
+        /** @type {number} */ (value),
       );
-    }
+    },
   );
   registerGuiParameter(
     'outline',
@@ -84,12 +84,12 @@ function main() {
         delete style['stroke-color'];
       }
       regenerateLayer();
-    }
+    },
   );
 
   resetData(
     /** @type {number} */ (getGuiParameterValue('count')),
-    /** @type {number} */ (getGuiParameterValue('vertices'))
+    /** @type {number} */ (getGuiParameterValue('vertices')),
   );
 }
 
