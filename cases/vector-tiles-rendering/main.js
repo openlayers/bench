@@ -187,7 +187,7 @@ function tileLoadFunction(tile) {
     countPolygons,
     countLines,
     numVertices,
-    extent
+    extent,
   );
   const features = format.readFeatures(data);
   tile.setFeatures(features);
@@ -204,9 +204,9 @@ function main() {
           source,
           // @ts-ignore
           style: style,
-        })
+        }),
       );
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -222,7 +222,7 @@ function main() {
       // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
       // @ts-ignore
       source.setKey(Date.now().toString());
-    }
+    },
   );
 }
 

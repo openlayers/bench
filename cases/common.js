@@ -286,7 +286,7 @@ export function registerGuiParameter(
   label,
   values,
   defaultValue,
-  callback
+  callback,
 ) {
   let controller;
   const isNumeric = typeof values[0] === 'number';
@@ -309,7 +309,7 @@ export function registerGuiParameter(
       id,
       numericValues[0],
       numericValues[1],
-      numericValues[2] || 1
+      numericValues[2] || 1,
     );
   } else {
     guiParams[id] = initialValue;
@@ -388,7 +388,7 @@ export function initializeGui() {
         return;
       }
       regenerateLayer();
-    }
+    },
   );
 
   registerGuiParameter(
@@ -402,6 +402,6 @@ export function initializeGui() {
       } else if (!initial) {
         location.reload();
       }
-    }
+    },
   );
 }
