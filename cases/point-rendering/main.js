@@ -42,7 +42,7 @@ function main() {
     },
     (map) => {
       map.addLayer(new VectorLayer({source, style}));
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -56,9 +56,9 @@ function main() {
       }
       resetData(
         /** @type {number} */ (value),
-        /** @type {number} */ (getGuiParameterValue('radius'))
+        /** @type {number} */ (getGuiParameterValue('radius')),
       );
-    }
+    },
   );
   registerGuiParameter('radius', 'Radius', [4, 40, 1], 4, (value, initial) => {
     if (initial) {
@@ -66,13 +66,13 @@ function main() {
     }
     resetData(
       /** @type {number} */ (getGuiParameterValue('count')),
-      /** @type {number} */ (value)
+      /** @type {number} */ (value),
     );
   });
 
   resetData(
     /** @type {number} */ (getGuiParameterValue('count')),
-    /** @type {number} */ (getGuiParameterValue('radius'))
+    /** @type {number} */ (getGuiParameterValue('radius')),
   );
 }
 main();

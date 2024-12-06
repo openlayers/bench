@@ -48,9 +48,9 @@ function main() {
               style,
             },
           ],
-        })
+        }),
       );
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -60,7 +60,7 @@ function main() {
     200000,
     (value, initial) => {
       resetData(/** @type {number} */ (value));
-    }
+    },
   );
   registerGuiParameter(
     'filterValue',
@@ -73,7 +73,7 @@ function main() {
       }
       style.filter = ['>', ['get', 'ratio'], value];
       regenerateLayer();
-    }
+    },
   );
   style.filter = ['>', ['get', 'ratio'], getGuiParameterValue('filterValue')];
 }
