@@ -16,7 +16,7 @@
     "@types/geojson": "^7946.0.10",
     "eslint": "^8.56.0",
     "eslint-config-openlayers": "^18.1.0",
-    "lil-gui": "^0.19.1",
+    "lil-gui": "^0.20.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.4"
   },
