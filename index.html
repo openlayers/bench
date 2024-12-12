@@ -1,126 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    <title>OpenLayers Benchmark</title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" type="text/css" href="/node_modules/ol/ol.css" />
-    <link rel="stylesheet" type="text/css" href="/theme/site.css" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/theme/img/logo-light.svg"
-      media="(prefers-color-scheme: light)"
-    />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/theme/img/logo-dark.svg"
-      media="(prefers-color-scheme: dark)"
-    />
-    <style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+  <title>OpenLayers Benchmark</title>
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+    crossorigin="anonymous"
+  />
+  <link rel="stylesheet" type="text/css" href="/node_modules/ol/ol.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/site.css" />
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="/theme/img/logo-light.svg"
+    media="(prefers-color-scheme: light)"
+  />
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="/theme/img/logo-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <style>
       .cases {
-        display: block;
-        padding: 0.65rem;
-        height: 140px;
-        margin: 0.65rem 0;
-        overflow: auto;
+          display: block;
+          padding: 0.65rem;
+          height: 140px;
+          margin: 0.65rem 0;
+          overflow: auto;
       }
       .cases p.description {
-        font-size: smaller;
-        margin: 5px 0;
+          font-size: smaller;
+          margin: 5px 0;
       }
       a.cases {
-        text-decoration: none;
+          text-decoration: none;
       }
       a.cases:hover :first-child {
-        text-decoration: underline;
+          text-decoration: underline;
       }
-    </style>
-  </head>
-  <body>
-    <header
-      class="navbar navbar-expand-md navbar-dark mb-3 px-3 py-0 fixed-top"
-    >
-      <a class="navbar-brand" href="/">
-        <img src="/theme/img/logo-dark.svg" width="70" height="70" alt="Logo" />
-        &nbsp;OpenLayers Benchmark
-      </a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#olmenu"
-        aria-controls="olmenu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </header>
+  </style>
+</head>
+<body>
+<header
+  class="navbar navbar-expand-md navbar-dark mb-3 px-3 py-0 fixed-top"
+>
+  <a class="navbar-brand" href="/">
+    <img src="/theme/img/logo-dark.svg" width="70" height="70" alt="Logo" />
+    &nbsp;OpenLayers Benchmark
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#olmenu"
+    aria-controls="olmenu"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</header>
 
-    <div id="app" class="container-fluid">
-      <div class="row mt-3">
-        <div
-          class="col-md-4 col-sm-6"
-          v-for="caseItem in cases"
-          :key="caseItem.link"
-        >
-          <a :href="caseItem.link" class="cases bg-light border rounded">
-            <strong>{{ caseItem.title }}</strong><br />
-            <small>({{ caseItem.link }})</small>
-            <p class="description">{{ caseItem.shortdesc }}</p>
-          </a>
-        </div>
-      </div>
-    </div>
+<div id="app" class="container-fluid"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-    <script>
-      new Vue({
-        el: "#app",
-        data: {
-          cases: [
-            {
-              title: "Polygon Rendering",
-              link: "cases/polygon-rendering/",
-              shortdesc:
-                "Performance comparison of Canvas and WebGL for rendering polygon geometries.",
-            },
-            {
-              title: "Point Rendering",
-              link: "cases/point-rendering/",
-              shortdesc:
-                "Performance comparison of Canvas and WebGL for rendering point data.",
-            },
-            {
-              title: "Line Rendering",
-              link: "cases/line-rendering/",
-              shortdesc:
-                "Performance comparison of Canvas and WebGL for rendering line geometries.",
-            },
-            {
-              title: "Vector Tiles Rendering",
-              link: "cases/vector-tiles-rendering/",
-              shortdesc:
-                "Performance comparison of Canvas and WebGL for rendering vector tiles.",
-            },
-            {
-              title: "Filtering Shapes",
-              link: "cases/filtering-shapes/",
-              shortdesc:
-                "Performance comparison of Canvas and WebGL for filtering shapes.",
-            },
-          ],
-        },
-      });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const cases = [
+      {
+        title: "Polygon Rendering",
+        link: "cases/polygon-rendering/",
+        shortdesc:
+          "Performance comparison of Canvas and WebGL for rendering polygon geometries.",
+      },
+      {
+        title: "Point Rendering",
+        link: "cases/point-rendering/",
+        shortdesc:
+          "Performance comparison of Canvas and WebGL for rendering point data.",
+      },
+      {
+        title: "Line Rendering",
+        link: "cases/line-rendering/",
+        shortdesc:
+          "Performance comparison of Canvas and WebGL for rendering line geometries.",
+      },
+      {
+        title: "Vector Tiles Rendering",
+        link: "cases/vector-tiles-rendering/",
+        shortdesc:
+          "Performance comparison of Canvas and WebGL for rendering vector tiles.",
+      },
+      {
+        title: "Filtering Shapes",
+        link: "cases/filtering-shapes/",
+        shortdesc:
+          "Performance comparison of Canvas and WebGL for filtering shapes.",
+      },
+    ];
+
+    const app = document.getElementById("app");
+    const row = document.createElement("div");
+    row.className = "row mt-3";
+
+    cases.forEach((caseItem) => {
+      const col = document.createElement("div");
+      col.className = "col-md-4 col-sm-6";
+
+      const a = document.createElement("a");
+      a.href = caseItem.link;
+      a.className = "cases bg-light border rounded";
+
+      const strong = document.createElement("strong");
+      strong.textContent = caseItem.title;
+
+      const small = document.createElement("small");
+      small.textContent = `(${caseItem.link})`;
+
+      const p = document.createElement("p");
+      p.className = "description";
+      p.textContent = caseItem.shortdesc;
+
+      a.appendChild(strong);
+      a.appendChild(document.createElement("br"));
+      a.appendChild(small);
+      a.appendChild(p);
+
+      col.appendChild(a);
+      row.appendChild(col);
+    });
+
+    app.appendChild(row);
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
