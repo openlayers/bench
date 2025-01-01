@@ -7,6 +7,7 @@ import {
   getGuiParameterValue,
   getRandomColor,
   initializeGui,
+  regenerateLayer,
   registerGuiParameter,
 } from '../common.js';
 import {transformExtent} from 'ol/proj.js';
@@ -21,27 +22,52 @@ const source = new VectorTileSource({
 const format = new GeoJSON({featureProjection: 'EPSG:3857'});
 
 /**
- * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/webgl.js').WebGLStyle}
+ * @type {function(): Array<import('ol/style/flat.js').Rule>}
  */
-const style = {
-  'fill-color': ['get', 'color'],
-  'stroke-color': ['get', 'color'],
-  'stroke-width': 2,
-  'circle-radius': 7,
-  'circle-fill-color': ['get', 'color'],
-  'circle-stroke-color': 'gray',
-  'circle-stroke-width': 0.5,
-};
+function generateStyle() {
+  const totalStylesCount = /** @type {number} */ (
+    getGuiParameterValue('styleCount')
+  );
+  return new Array(totalStylesCount).fill(0).map((_, i) => {
+    const color = getRandomColor();
+    return {
+      style: {
+        'fill-color': color,
+        'stroke-color': [
+          'match',
+          ['geometry-type'],
+          'LineString',
+          color,
+          '#333',
+        ],
+        'stroke-width': 2,
+        'circle-radius': 7,
+        'circle-fill-color': color,
+        'circle-stroke-color': '#333',
+        'circle-stroke-width': 2,
+      },
+      filter: ['==', ['get', 'propValue'], i],
+    };
+  });
+}
 
 /**
  * @param {number} countPoints Points count
  * @param {number} countPolygons Polygons count
  * @param {number} countLines Lines count
  * @param {number} numVertices Amount of vertices in polygons
+ * @param {Array<number>} propValues Property values to choose from
  * @param {Array<number>} bbox Bounding box
  * @return {import('geojson').FeatureCollection} Feature collection
  */
-function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
+function makeData(
+  countPoints,
+  countPolygons,
+  countLines,
+  numVertices,
+  propValues,
+  bbox
+) {
   /**
    * @type {Array<import('geojson').Feature>}
    */
@@ -74,7 +100,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
       features.push({
         type: 'Feature',
         properties: {
-          color: getRandomColor(),
+          propValue: propValues[Math.floor(Math.random() * propValues.length)],
         },
         geometry: {
           type: 'Polygon',
@@ -88,7 +114,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
   features.push({
     type: 'Feature',
     properties: {
-      color: getRandomColor(),
+      propValue: propValues[Math.floor(Math.random() * propValues.length)],
     },
     geometry: {
       type: 'LineString',
@@ -110,7 +136,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
       features.push({
         type: 'Feature',
         properties: {
-          color: getRandomColor(),
+          propValue: propValues[Math.floor(Math.random() * propValues.length)],
         },
         geometry: {
           type: 'Point',
@@ -148,10 +174,11 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
       }
       coordinates.push(...singleCurve);
     }
+
     features.push({
       type: 'Feature',
       properties: {
-        color: getRandomColor(),
+        propValue: propValues[Math.floor(Math.random() * propValues.length)],
       },
       geometry: {
         type: 'LineString',
@@ -167,7 +194,7 @@ function makeData(countPoints, countPolygons, countLines, numVertices, bbox) {
 }
 
 /**
- * @param {import("ol/VectorTile.js").default} tile Vector tile
+ * @param {import("ol/VectorTile.js").default<*>} tile Vector tile
  */
 function tileLoadFunction(tile) {
   const totalFeatureCount = /** @type {number} */ (
@@ -182,11 +209,16 @@ function tileLoadFunction(tile) {
     : [0, 0, 0, 0];
   extent = transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
   const numVertices = 5;
+  const totalStylesCount = /** @type {number} */ (
+    getGuiParameterValue('styleCount')
+  );
+  const propValues = new Array(totalStylesCount).fill(0).map((_, i) => i);
   const data = makeData(
     countPoints,
     countPolygons,
     countLines,
     numVertices,
+    propValues,
     extent
   );
   const features = format.readFeatures(data);
@@ -196,34 +228,56 @@ function tileLoadFunction(tile) {
 function main() {
   createMap(
     (map) => {
-      map.addLayer(new WebGLVectorTileLayer({source, properties: {style}}));
+      map.addLayer(
+        new WebGLVectorTileLayer({
+          source,
+          properties: {style: generateStyle()},
+        })
+      );
     },
     (map) => {
       map.addLayer(
         new VectorTileLayer({
           source,
           // @ts-ignore
-          style: style,
+          style: generateStyle(),
         })
       );
     }
   );
-  initializeGui();
   registerGuiParameter(
     'count',
     'Feature count',
-    [500, 10000, 500],
+    [500, 10000],
     500,
     (value, initial) => {
       if (initial) {
         return;
       }
+      regenerateLayer();
       source.refresh();
       // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
       // @ts-ignore
       source.setKey(Date.now().toString());
     }
   );
+  registerGuiParameter(
+    'styleCount',
+    'Style layers count',
+    [1, 500],
+    10,
+    (value, initial) => {
+      if (initial) {
+        return;
+      }
+      regenerateLayer();
+      source.refresh();
+      // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
+      // @ts-ignore
+      source.setKey(Date.now().toString());
+    }
+  );
+  initializeGui();
 }
 
 main();
