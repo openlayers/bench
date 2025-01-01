@@ -7,7 +7,6 @@ import CompositeMapRenderer from 'ol/renderer/Composite.js';
 import ExecutorGroup from 'ol/render/canvas/ExecutorGroup.js';
 import GUI from 'lil-gui';
 import GeoJSON from 'ol/format/GeoJSON.js';
-import Layer from 'ol/layer/Layer.js';
 import Link from 'ol/interaction/Link.js';
 import Map from 'ol/Map.js';
 import MixedGeometryBatch from 'ol/render/webgl/MixedGeometryBatch.js';
@@ -64,20 +63,6 @@ export function createMap(useWebGL, useCanvas) {
 }
 
 /**
- * @extends {Layer<VectorSource, WebGLVectorLayerRenderer>}
- */
-export class WebGLVectorLayer extends Layer {
-  /**
-   * @return {WebGLVectorLayerRenderer} The renderer.
-   */
-  createRenderer() {
-    return new WebGLVectorLayerRenderer(this, {
-      style: this.get('style'),
-    });
-  }
-}
-
-/**
  * @extends {BaseTileLayer<import("ol/source/VectorTile.js").default, WebGLVectorTileLayerRenderer>}
  */
 export class WebGLVectorTileLayer extends BaseTileLayer {
@@ -96,8 +81,13 @@ const COLOR_PALETTE = [
   '#a6d854',
   '#ffd92f',
 ];
-export function getRandomColor() {
+export function getRandomPaletteColor() {
   return COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+}
+
+export function getRandomColor() {
+  const h = Math.floor(Math.random() * 360);
+  return `hsl(${h}, 90%, 50%)`;
 }
 
 const format = new GeoJSON();
@@ -158,7 +148,7 @@ export function generatePolygons(count, numVertices) {
       features.push({
         type: 'Feature',
         properties: {
-          color: getRandomColor(),
+          color: getRandomPaletteColor(),
           ratio: Math.round(Math.random() * 100),
         },
         geometry: {
@@ -191,7 +181,7 @@ export function generatePoints(count, radius) {
       features.push({
         type: 'Feature',
         properties: {
-          color: getRandomColor(),
+          color: getRandomPaletteColor(),
           radius,
         },
         geometry: {
@@ -248,7 +238,7 @@ export function generateLines(lineCount, curveComplexity, width) {
     features.push({
       type: 'Feature',
       properties: {
-        color: getRandomColor(), // Use deterministic color selection
+        color: getRandomPaletteColor(), // Use deterministic color selection
         width,
       },
       geometry: {

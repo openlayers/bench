@@ -1,7 +1,7 @@
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
+import WebGLVectorLayer from 'ol/layer/WebGLVector.js';
 import {
-  WebGLVectorLayer,
   addGeoJsonToSource,
   createMap,
   generatePolygons,
@@ -16,15 +16,18 @@ const source = new VectorSource({
 });
 
 /**
- *
- * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/webgl.js').WebGLStyle}
+ * @type {Array<import('ol/style/flat.js').Rule>}
  */
-const style = {
-  'fill-color': ['get', 'color'],
-  'stroke-color': 'gray',
-  'stroke-width': 2,
-  filter: ['>', ['get', 'ratio'], 0],
-};
+const style = [
+  {
+    style: {
+      'fill-color': ['get', 'color'],
+      'stroke-color': 'gray',
+      'stroke-width': 2,
+    },
+    filter: ['>', ['get', 'ratio'], ['var', 'minRatio']],
+  },
+];
 
 /**
  * @param {number} count The number of features to create.
@@ -36,18 +39,13 @@ function resetData(count) {
 function main() {
   createMap(
     (map) => {
-      map.addLayer(new WebGLVectorLayer({source, properties: {style}}));
+      map.addLayer(new WebGLVectorLayer({source, style}));
     },
     (map) => {
       map.addLayer(
         new VectorLayer({
           source,
-          style: [
-            {
-              filter: style.filter,
-              style,
-            },
-          ],
+          style,
         })
       );
     }
@@ -71,11 +69,16 @@ function main() {
       if (initial) {
         return;
       }
-      style.filter = ['>', ['get', 'ratio'], value];
+      // TODO: use a style variables here instead
+      style[0].filter = ['>', ['get', 'ratio'], value];
       regenerateLayer();
     }
   );
-  style.filter = ['>', ['get', 'ratio'], getGuiParameterValue('filterValue')];
+  style[0].filter = [
+    '>',
+    ['get', 'ratio'],
+    getGuiParameterValue('filterValue'),
+  ];
 }
 
 main();
