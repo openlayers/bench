@@ -21,13 +21,15 @@ const source = new VectorTileSource({
 
 const format = new GeoJSON({featureProjection: 'EPSG:3857'});
 
+const defaultStylesCount = 10;
+
 /**
  * @type {function(): Array<import('ol/style/flat.js').Rule>}
  */
 function generateStyle() {
-  const totalStylesCount = /** @type {number} */ (
-    getGuiParameterValue('styleCount')
-  );
+  const totalStylesCount =
+    /** @type {number} */ (getGuiParameterValue('styleCount')) ??
+    defaultStylesCount;
   return new Array(totalStylesCount).fill(0).map((_, i) => {
     const color = getRandomColor();
     return {
@@ -245,6 +247,7 @@ function main() {
       );
     }
   );
+  initializeGui();
   registerGuiParameter(
     'count',
     'Feature count',
@@ -265,7 +268,7 @@ function main() {
     'styleCount',
     'Style layers count',
     [1, 500],
-    10,
+    defaultStylesCount,
     (value, initial) => {
       if (initial) {
         return;
@@ -277,7 +280,6 @@ function main() {
       source.setKey(Date.now().toString());
     }
   );
-  initializeGui();
 }
 
 main();

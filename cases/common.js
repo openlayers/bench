@@ -332,9 +332,21 @@ export function registerGuiParameter(
 
 /**
  * @param {string} id Parameter id
- * @return {number|boolean|function(): void} Current value
+ * @return {number|boolean|null|function(): void} Current value (null if unknown/uninitialized)
  */
 export function getGuiParameterValue(id) {
+  // read from url if not already set
+  if (!(id in guiParams)) {
+    const raw = new URL(window.location.href).searchParams.get(id) ?? '';
+    const asNumber = Number.parseFloat(raw);
+    if (!Number.isNaN(asNumber)) {
+      return asNumber;
+    }
+    if (raw === 'true' || raw === 'false') {
+      return raw === 'true';
+    }
+    return null;
+  }
   return guiParams[id];
 }
 
