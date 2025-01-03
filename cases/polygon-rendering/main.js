@@ -1,7 +1,7 @@
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
+import WebGLVectorLayer from 'ol/layer/WebGLVector.js';
 import {
-  WebGLVectorLayer,
   addGeoJsonToSource,
   createMap,
   generatePolygons,
@@ -16,7 +16,7 @@ const source = new VectorSource({
 });
 
 /**
- * @type {import('ol/style/flat.js').FlatStyle & import('ol/style/webgl.js').WebGLStyle}
+ * @type {import('ol/style/flat.js').FlatStyle}
  */
 const style = {
   'fill-color': ['get', 'color'],
@@ -33,7 +33,7 @@ function resetData(count, numVertices) {
 function main() {
   createMap(
     (map) => {
-      map.addLayer(new WebGLVectorLayer({source, properties: {style}}));
+      map.addLayer(new WebGLVectorLayer({source, style}));
     },
     (map) => {
       map.addLayer(new VectorLayer({source, style}));
