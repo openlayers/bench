@@ -18,7 +18,7 @@ import VectorTileLayer from 'ol/layer/VectorTile.js';
 import View from 'ol/View.js';
 import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer.js';
 import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer.js';
-import {defaults as defaultInteractions} from 'ol/interaction/defaults.js';
+import {Layer} from 'ol/layer.js';
 import {
   defineFrameContainer,
   showGraph,
@@ -50,16 +50,33 @@ export function createMap(useWebGL, useCanvas) {
   map = new Map({
     layers: [],
     target: 'map',
-    view: new View({
+  });
+  map.setView(
+    new View({
       center: [0, 0],
       zoom: 4,
       multiWorld: true,
-    }),
-    interactions: defaultInteractions().extend([link]),
-  });
+    })
+  );
   useWebGLCallback = useWebGL;
   useCanvasCallback = useCanvas;
+  map.addInteraction(link);
   return map;
+}
+
+/**
+ * @extends {Layer<VectorSource, WebGLVectorLayerRenderer>}
+ */
+export class WebGLVectorLayer extends Layer {
+  /**
+   * @return {WebGLVectorLayerRenderer} The renderer.
+   */
+  createRenderer() {
+    return new WebGLVectorLayerRenderer(this, {
+      style: this.get('style'),
+      variables: {},
+    });
+  }
 }
 
 /**
