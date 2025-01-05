@@ -453,6 +453,24 @@ function animate() {
 }
 
 export function initializeGui() {
+  // @ts-ignore
+  const olVersion =
+    new URL(window.location.href).searchParams.get('olVersion') ??
+    // @ts-ignore
+    // eslint-disable-next-line no-undef
+    __DEFAULT_OL_VERSION; // defined at build time by Vite
+  gui
+    .add({olVersion}, 'olVersion')
+    .name('OpenLayers Version')
+    // @ts-ignore
+    // eslint-disable-next-line no-undef
+    .options(__OL_VERSIONS) // defined at build time by Vite
+    .onFinishChange((/** @type {string} */ rawValue) => {
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('olVersion', rawValue);
+      window.location.href = newUrl.href;
+    });
+
   registerGuiParameter('animate', 'Start Animation', [], animate, () => {});
   registerGuiParameter(
     'renderer',
