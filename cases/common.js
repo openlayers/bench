@@ -18,7 +18,7 @@ import VectorTileLayer from 'ol/layer/VectorTile.js';
 import View from 'ol/View.js';
 import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer.js';
 import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer.js';
-import {defaults as defaultInteractions} from 'ol/interaction/defaults.js';
+import {Layer} from 'ol/layer.js';
 import {
   defineFrameContainer,
   showGraph,
@@ -50,16 +50,33 @@ export function createMap(useWebGL, useCanvas) {
   map = new Map({
     layers: [],
     target: 'map',
-    view: new View({
+  });
+  map.setView(
+    new View({
       center: [0, 0],
       zoom: 4,
       multiWorld: true,
-    }),
-    interactions: defaultInteractions().extend([link]),
-  });
+    })
+  );
   useWebGLCallback = useWebGL;
   useCanvasCallback = useCanvas;
+  map.addInteraction(link);
   return map;
+}
+
+/**
+ * @extends {Layer<VectorSource, WebGLVectorLayerRenderer>}
+ */
+export class WebGLVectorLayer extends Layer {
+  /**
+   * @return {WebGLVectorLayerRenderer} The renderer.
+   */
+  createRenderer() {
+    return new WebGLVectorLayerRenderer(this, {
+      style: this.get('style'),
+      variables: {},
+    });
+  }
 }
 
 /**
@@ -436,6 +453,24 @@ function animate() {
 }
 
 export function initializeGui() {
+  // @ts-ignore
+  const olVersion =
+    new URL(window.location.href).searchParams.get('olVersion') ??
+    // @ts-ignore
+    // eslint-disable-next-line no-undef
+    __DEFAULT_OL_VERSION; // defined at build time by Vite
+  gui
+    .add({olVersion}, 'olVersion')
+    .name('OpenLayers Version')
+    // @ts-ignore
+    // eslint-disable-next-line no-undef
+    .options(__OL_VERSIONS) // defined at build time by Vite
+    .onFinishChange((/** @type {string} */ rawValue) => {
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('olVersion', rawValue);
+      window.location.href = newUrl.href;
+    });
+
   registerGuiParameter('animate', 'Start Animation', [], animate, () => {});
   registerGuiParameter(
     'renderer',
