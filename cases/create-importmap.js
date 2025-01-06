@@ -4,16 +4,17 @@ const olVersion = currentUrl.searchParams.get('olVersion');
 if (document.currentScript) {
   const importMap = document.createElement('script');
   importMap.type = 'importmap';
+  const basePath = document.currentScript.dataset.basePath;
 
   const commonImports = `
-    "color-rgba": "/node_modules/color-rgba/index.js",
-    "color-parse": "/node_modules/color-parse/index.js",
-    "color-name": "/node_modules/color-name/index.js",
-    "color-name/": "/node_modules/color-name/",
-    "color-space/": "/node_modules/color-space/",
-    "rbush": "/node_modules/rbush/index.js",
-    "quickselect": "/node_modules/quickselect/index.js",
-    "earcut": "/node_modules/earcut/src/earcut.js"`;
+    "color-rgba": "${basePath}node_modules/color-rgba/index.js",
+    "color-parse": "${basePath}node_modules/color-parse/index.js",
+    "color-name": "${basePath}node_modules/color-name/index.js",
+    "color-name/": "${basePath}node_modules/color-name/",
+    "color-space/": "${basePath}node_modules/color-space/",
+    "rbush": "${basePath}node_modules/rbush/index.js",
+    "quickselect": "${basePath}node_modules/quickselect/index.js",
+    "earcut": "${basePath}node_modules/earcut/src/earcut.js"`;
 
   // this import map is used if we're asking for a specific version
   if (olVersion) {
@@ -30,7 +31,7 @@ if (document.currentScript) {
     importMap.textContent = `
 {
   "imports": {
-    "ol/": "/node_modules/ol/",
+    "ol/": "${basePath}node_modules/ol/",
     ${commonImports}
   }
 }
