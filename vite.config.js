@@ -41,8 +41,6 @@ const addNodeModulesToDist = () => {
     async writeBundle() {
       const toCopy = [
         ['./node_modules/ol', './dist/node_modules/ol'],
-        ['./node_modules/color-rgba', './dist/node_modules/color-rgba'],
-        ['./node_modules/color-name', './dist/node_modules/color-name'],
         ['./node_modules/rbush', './dist/node_modules/rbush'],
         ['./node_modules/quickselect', './dist/node_modules/quickselect'],
         ['./node_modules/earcut', './dist/node_modules/earcut'],
