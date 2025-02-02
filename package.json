@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@camptocamp/rendering-analyzer": "^0.2.0",
-    "ol": "10.3.2-dev.1737060172451"
+    "ol": "10.4.1-dev.1738518539313"
   },
   "eslintConfig": {
     "extends": "openlayers"
