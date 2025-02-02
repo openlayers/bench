@@ -41,6 +41,10 @@ const addNodeModulesToDist = () => {
     async writeBundle() {
       const toCopy = [
         ['./node_modules/ol', './dist/node_modules/ol'],
+        ['./node_modules/color-rgba', './dist/node_modules/color-rgba'],
+        ['./node_modules/color-parse', './dist/node_modules/color-parse'],
+        ['./node_modules/color-name', './dist/node_modules/color-name'],
+        ['./node_modules/color-space', './dist/node_modules/color-space'],
         ['./node_modules/rbush', './dist/node_modules/rbush'],
         ['./node_modules/quickselect', './dist/node_modules/quickselect'],
         ['./node_modules/earcut', './dist/node_modules/earcut'],
@@ -48,15 +52,21 @@ const addNodeModulesToDist = () => {
         ['./cases/create-importmap.js', './dist/cases/create-importmap.js'],
       ];
       await Promise.all(
-        toCopy.map(([src, dest]) =>
+        toCopy.map(([src, dest]) => {
+          if (!existsSync(src)) {
+            return;
+          }
           fs.cp(src, dest, {
             recursive: true,
-          })
-        )
+          });
+        })
       );
 
       // tweak color-name default export
       const colorNamePath = './dist/node_modules/color-name/index.js';
+      if (!existsSync(colorNamePath)) {
+        return;
+      }
       const colorName = await fs.readFile(
         './dist/node_modules/color-name/index.js',
         'utf-8'
@@ -71,6 +81,7 @@ const addNodeModulesToDist = () => {
 
 // list of supported OL versions and current one
 const SUPPORTED_OL_VERSIONS = [
+  '10.4.0',
   '10.3.1',
   '10.3.0',
   '10.2.1',
