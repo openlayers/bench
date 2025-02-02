@@ -52,21 +52,15 @@ const addNodeModulesToDist = () => {
         ['./cases/create-importmap.js', './dist/cases/create-importmap.js'],
       ];
       await Promise.all(
-        toCopy.map(([src, dest]) => {
-          if (!existsSync(src)) {
-            return;
-          }
+        toCopy.map(([src, dest]) =>
           fs.cp(src, dest, {
             recursive: true,
-          });
-        })
+          })
+        )
       );
 
       // tweak color-name default export
       const colorNamePath = './dist/node_modules/color-name/index.js';
-      if (!existsSync(colorNamePath)) {
-        return;
-      }
       const colorName = await fs.readFile(
         './dist/node_modules/color-name/index.js',
         'utf-8'
