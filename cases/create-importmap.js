@@ -7,11 +7,6 @@ if (document.currentScript) {
   const basePath = document.currentScript.dataset.basePath;
 
   const commonImports = `
-    "color-rgba": "${basePath}node_modules/color-rgba/index.js",
-    "color-parse": "${basePath}node_modules/color-parse/index.js",
-    "color-name": "${basePath}node_modules/color-name/index.js",
-    "color-name/": "${basePath}node_modules/color-name/",
-    "color-space/": "${basePath}node_modules/color-space/",
     "rbush": "${basePath}node_modules/rbush/index.js",
     "quickselect": "${basePath}node_modules/quickselect/index.js",
     "earcut": "${basePath}node_modules/earcut/src/earcut.js"`;
