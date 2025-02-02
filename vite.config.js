@@ -43,7 +43,6 @@ const addNodeModulesToDist = () => {
         ['./node_modules/ol', './dist/node_modules/ol'],
         ['./node_modules/color-rgba', './dist/node_modules/color-rgba'],
         ['./node_modules/color-parse', './dist/node_modules/color-parse'],
-        ['./node_modules/color-name', './dist/node_modules/color-name'],
         ['./node_modules/color-space', './dist/node_modules/color-space'],
         ['./node_modules/rbush', './dist/node_modules/rbush'],
         ['./node_modules/quickselect', './dist/node_modules/quickselect'],
@@ -57,17 +56,6 @@ const addNodeModulesToDist = () => {
             recursive: true,
           })
         )
-      );
-
-      // tweak color-name default export
-      const colorNamePath = './dist/node_modules/color-name/index.js';
-      const colorName = await fs.readFile(
-        './dist/node_modules/color-name/index.js',
-        'utf-8'
-      );
-      await fs.writeFile(
-        colorNamePath,
-        colorName.replace('module.exports = ', 'export default ')
       );
     },
   };
