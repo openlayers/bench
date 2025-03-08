@@ -115,6 +115,7 @@ function makeData(
     (width + height) / 4 / (Math.ceil(Math.sqrt(countPoints)) + 1);
 
   // Generate polygons on the left bottom corner
+  let number = 1;
   for (let lon = bbox[0] + gridSpacing; lon < centerLon; lon += gridSpacing) {
     for (let lat = bbox[1] + gridSpacing; lat < centerLat; lat += gridSpacing) {
       const buffer = (0.3 + Math.random() * 0.2) * gridSpacing;
@@ -129,11 +130,13 @@ function makeData(
         polygonCoordinates.push([x, y]);
       }
       polygonCoordinates.push(polygonCoordinates[0]);
+      const label = `polygon n°${number++}`;
 
       features.push({
         type: 'Feature',
         properties: {
           propValue: propValues[Math.floor(Math.random() * propValues.length)],
+          label,
         },
         geometry: {
           type: 'Polygon',
@@ -148,6 +151,7 @@ function makeData(
     type: 'Feature',
     properties: {
       propValue: propValues[Math.floor(Math.random() * propValues.length)],
+      label: '',
     },
     geometry: {
       type: 'LineString',
@@ -162,14 +166,17 @@ function makeData(
   });
 
   // Generate points on the right top corner
+  number = 1;
   for (let lon = centerLon + gridSpacing; lon < bbox[2]; lon += gridSpacing) {
     for (let lat = bbox[1] + gridSpacing; lat < centerLat; lat += gridSpacing) {
       const point = [lon, lat];
+      const label = `point n°${number++}`;
 
       features.push({
         type: 'Feature',
         properties: {
           propValue: propValues[Math.floor(Math.random() * propValues.length)],
+          label,
         },
         geometry: {
           type: 'Point',
@@ -190,6 +197,7 @@ function makeData(
    */
   let singleCurve = []; // Create a singleCurve array outside the loop
 
+  number = 1;
   for (let j = 0; j < countLines; j++) {
     const coordinates = [];
     for (let i = 0; i < periodCount; i++) {
@@ -207,11 +215,13 @@ function makeData(
       }
       coordinates.push(...singleCurve);
     }
+    const label = `line n°${number++}`;
 
     features.push({
       type: 'Feature',
       properties: {
         propValue: propValues[Math.floor(Math.random() * propValues.length)],
+        label,
       },
       geometry: {
         type: 'LineString',

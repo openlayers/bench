@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@camptocamp/rendering-analyzer": "^0.2.0",
+    "@scaleway/random-name": "^5.1.2",
     "ol": "10.6.1"
   }
 }
