@@ -7,9 +7,11 @@ import {
   getGuiParameterValue,
   getRandomColor,
   initializeGui,
+  olVersion,
   regenerateLayer,
   registerGuiParameter,
 } from '../common.js';
+import {compareVersions} from 'ol/string.js';
 import {transformExtent} from 'ol/proj.js';
 
 const source = new VectorTileSource({
@@ -24,12 +26,41 @@ const format = new GeoJSON({featureProjection: 'EPSG:3857'});
 const defaultStylesCount = 10;
 
 /**
- * @type {function(): Array<import('ol/style/flat.js').Rule>}
+ * @type {function(): Array<import('ol/style/flat.js').Rule>|import('ol/style/flat.js').FlatStyle}
  */
 function generateStyle() {
   const totalStylesCount =
     /** @type {number} */ (getGuiParameterValue('styleCount')) ??
     defaultStylesCount;
+
+  // use a single style rule for OpenLayers versions < 10.4.1
+  if (compareVersions(olVersion, '10.4.1') < 0) {
+    const colorExpr = [
+      'match',
+      ['get', 'propValue'],
+      ...new Array(totalStylesCount)
+        .fill(0)
+        .map((_, i) => i)
+        .map((i) => [i, getRandomColor()])
+        .flat(),
+      '#333',
+    ];
+    return {
+      'fill-color': colorExpr,
+      'stroke-color': [
+        'match',
+        ['geometry-type'],
+        'LineString',
+        colorExpr,
+        '#333',
+      ],
+      'stroke-width': 2,
+      'circle-radius': 7,
+      'circle-fill-color': colorExpr,
+      'circle-stroke-color': '#333',
+      'circle-stroke-width': 2,
+    };
+  }
   return new Array(totalStylesCount).fill(0).map((_, i) => {
     const color = getRandomColor();
     return {

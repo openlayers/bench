@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
-import WebGLVectorLayer from 'ol/layer/WebGLVector.js';
 import {
+  WebGLVectorLayer,
   addGeoJsonToSource,
   createMap,
   generateLines,
@@ -38,7 +38,7 @@ function resetData(lineCount, curveComplexity, width) {
 function main() {
   createMap(
     (map) => {
-      map.addLayer(new WebGLVectorLayer({source, style}));
+      map.addLayer(new WebGLVectorLayer({source, properties: {style}}));
     },
     (map) => {
       map.addLayer(new VectorLayer({source, style}));

@@ -452,13 +452,13 @@ function animate() {
   }, 1000);
 }
 
-export function initializeGui() {
+export const olVersion =
+  new URL(window.location.href).searchParams.get('olVersion') ??
   // @ts-ignore
-  const olVersion =
-    new URL(window.location.href).searchParams.get('olVersion') ??
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    __DEFAULT_OL_VERSION; // defined at build time by Vite
+  // eslint-disable-next-line no-undef
+  __DEFAULT_OL_VERSION; // defined at build time by Vite
+
+export function initializeGui() {
   gui
     .add({olVersion}, 'olVersion')
     .name('OpenLayers Version')
