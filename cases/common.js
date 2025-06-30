@@ -30,7 +30,9 @@ import {useGeographic} from 'ol/proj.js';
 
 useGeographic();
 
-const link = new Link();
+const link = new Link({
+  replace: true,
+});
 
 /** @type {Map} */
 let map;
