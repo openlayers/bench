@@ -46,9 +46,9 @@ function main() {
         new VectorLayer({
           source,
           style,
-        })
+        }),
       );
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -58,7 +58,7 @@ function main() {
     200000,
     (value, initial) => {
       resetData(/** @type {number} */ (value));
-    }
+    },
   );
   registerGuiParameter(
     'filterValue',
@@ -72,7 +72,7 @@ function main() {
       // TODO: use a style variables here instead
       style[0].filter = ['>', ['get', 'ratio'], value];
       regenerateLayer();
-    }
+    },
   );
   style[0].filter = [
     '>',

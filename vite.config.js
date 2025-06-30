@@ -1,8 +1,8 @@
+import {existsSync, readdirSync} from 'fs';
 import fs from 'fs/promises';
+import {join, resolve} from 'path';
 import {defineConfig} from 'vite';
 import {dependencies} from './package.json';
-import {existsSync, readdirSync} from 'fs';
-import {join, resolve} from 'path';
 
 const casesDir = resolve(__dirname, 'cases');
 
@@ -28,7 +28,7 @@ const putImportmapFirst = () => ({
     return html.replace(importmapLine, '').replace(
       '<head>',
       `<head>
-${importmapLine}`
+${importmapLine}`,
     );
   },
 });
@@ -55,19 +55,19 @@ const addNodeModulesToDist = () => {
         toCopy.map(([src, dest]) =>
           fs.cp(src, dest, {
             recursive: true,
-          })
-        )
+          }),
+        ),
       );
 
       // tweak color-name default export
       const colorNamePath = './dist/node_modules/color-name/index.js';
       const colorName = await fs.readFile(
         './dist/node_modules/color-name/index.js',
-        'utf-8'
+        'utf-8',
       );
       await fs.writeFile(
         colorNamePath,
-        colorName.replace('module.exports = ', 'export default ')
+        colorName.replace('module.exports = ', 'export default '),
       );
     },
   };

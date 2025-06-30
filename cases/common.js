@@ -1,24 +1,4 @@
 /* eslint-disable no-console */
-import BaseTileLayer from 'ol/layer/BaseTile.js';
-import BuilderGroup from 'ol/render/canvas/BuilderGroup.js';
-import CanvasVectorLayerRenderer from 'ol/renderer/canvas/VectorLayer.js';
-import CanvasVectorTileLayerRenderer from 'ol/renderer/canvas/VectorTileLayer.js';
-import CompositeMapRenderer from 'ol/renderer/Composite.js';
-import ExecutorGroup from 'ol/render/canvas/ExecutorGroup.js';
-import GUI from 'lil-gui';
-import GeoJSON from 'ol/format/GeoJSON.js';
-import Link from 'ol/interaction/Link.js';
-import Map from 'ol/Map.js';
-import MixedGeometryBatch from 'ol/render/webgl/MixedGeometryBatch.js';
-import TileGeometry from 'ol/webgl/TileGeometry.js';
-import VectorLayer from 'ol/layer/Vector.js';
-import VectorSource from 'ol/source/Vector.js';
-import VectorStyleRenderer from 'ol/render/webgl/VectorStyleRenderer.js';
-import VectorTileLayer from 'ol/layer/VectorTile.js';
-import View from 'ol/View.js';
-import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer.js';
-import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer.js';
-import {Layer} from 'ol/layer.js';
 import {
   defineFrameContainer,
   showGraph,
@@ -26,7 +6,27 @@ import {
   trackPerformance,
   // @ts-ignore
 } from '@camptocamp/rendering-analyzer';
+import lilGui from 'lil-gui';
+import Map from 'ol/Map.js';
+import View from 'ol/View.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
+import Link from 'ol/interaction/Link.js';
+import BaseTileLayer from 'ol/layer/BaseTile.js';
+import VectorLayer from 'ol/layer/Vector.js';
+import VectorTileLayer from 'ol/layer/VectorTile.js';
+import {Layer} from 'ol/layer.js';
 import {useGeographic} from 'ol/proj.js';
+import BuilderGroup from 'ol/render/canvas/BuilderGroup.js';
+import ExecutorGroup from 'ol/render/canvas/ExecutorGroup.js';
+import MixedGeometryBatch from 'ol/render/webgl/MixedGeometryBatch.js';
+import VectorStyleRenderer from 'ol/render/webgl/VectorStyleRenderer.js';
+import CompositeMapRenderer from 'ol/renderer/Composite.js';
+import CanvasVectorLayerRenderer from 'ol/renderer/canvas/VectorLayer.js';
+import CanvasVectorTileLayerRenderer from 'ol/renderer/canvas/VectorTileLayer.js';
+import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer.js';
+import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer.js';
+import VectorSource from 'ol/source/Vector.js';
+import TileGeometry from 'ol/webgl/TileGeometry.js';
 
 useGeographic();
 
@@ -58,7 +58,7 @@ export function createMap(useWebGL, useCanvas) {
       center: [0, 0],
       zoom: 4,
       multiWorld: true,
-    })
+    }),
   );
   useWebGLCallback = useWebGL;
   useCanvasCallback = useCanvas;
@@ -275,7 +275,7 @@ export function generateLines(lineCount, curveComplexity, width) {
 
 // GUI Utils
 
-const gui = new GUI();
+const gui = new lilGui();
 
 /** @type {Record<string, boolean|number|function(): void>} */
 const guiParams = {};
@@ -295,7 +295,7 @@ export function registerGuiParameter(
   label,
   values,
   defaultValue,
-  callback
+  callback,
 ) {
   let controller;
   const isNumeric = typeof values[0] === 'number';
@@ -322,7 +322,7 @@ export function registerGuiParameter(
       id,
       numericValues[0],
       numericValues[1],
-      numericValues[2] || 1
+      numericValues[2] || 1,
     );
   } else {
     guiParams[id] = initialValue;
@@ -449,7 +449,7 @@ function animate() {
       },
       {
         rotation: initialRotation - Math.PI / 2,
-      }
+      },
     );
   }, 1000);
 }
@@ -486,7 +486,7 @@ export function initializeGui() {
         return;
       }
       regenerateLayer();
-    }
+    },
   );
 
   registerGuiParameter(
@@ -500,6 +500,6 @@ export function initializeGui() {
       } else if (!initial) {
         location.reload();
       }
-    }
+    },
   );
 }
