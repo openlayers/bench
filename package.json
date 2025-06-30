@@ -21,7 +21,7 @@
     "eslint-config-openlayers": "^18.1.0",
     "lil-gui": "^0.20.0",
     "typescript": "^5.2.2",
-    "vite": "^6.0.3"
+    "vite": "^7.0.0"
   },
   "dependencies": {
     "@camptocamp/rendering-analyzer": "^0.2.0",
