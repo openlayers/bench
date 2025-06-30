@@ -1,6 +1,8 @@
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorTileLayer from 'ol/layer/VectorTile.js';
+import {transformExtent} from 'ol/proj.js';
 import VectorTileSource from 'ol/source/VectorTile.js';
+import {compareVersions} from 'ol/string.js';
 import {
   WebGLVectorTileLayer,
   createMap,
@@ -11,8 +13,6 @@ import {
   regenerateLayer,
   registerGuiParameter,
 } from '../common.js';
-import {compareVersions} from 'ol/string.js';
-import {transformExtent} from 'ol/proj.js';
 
 const source = new VectorTileSource({
   url: '{z}/{x}/{y}',
@@ -99,7 +99,7 @@ function makeData(
   countLines,
   numVertices,
   propValues,
-  bbox
+  bbox,
 ) {
   /**
    * @type {Array<import('geojson').Feature>}
@@ -252,7 +252,7 @@ function tileLoadFunction(tile) {
     countLines,
     numVertices,
     propValues,
-    extent
+    extent,
   );
   const features = format.readFeatures(data);
   tile.setFeatures(features);
@@ -265,7 +265,7 @@ function main() {
         new WebGLVectorTileLayer({
           source,
           properties: {style: generateStyle()},
-        })
+        }),
       );
     },
     (map) => {
@@ -274,9 +274,9 @@ function main() {
           source,
           // @ts-ignore
           style: generateStyle(),
-        })
+        }),
       );
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -293,7 +293,7 @@ function main() {
       // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
       // @ts-ignore
       source.setKey(Date.now().toString());
-    }
+    },
   );
   registerGuiParameter(
     'styleCount',
@@ -309,7 +309,7 @@ function main() {
       // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
       // @ts-ignore
       source.setKey(Date.now().toString());
-    }
+    },
   );
 }
 

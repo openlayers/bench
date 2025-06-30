@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
 import {
@@ -42,7 +41,7 @@ function main() {
     },
     (map) => {
       map.addLayer(new VectorLayer({source, style}));
-    }
+    },
   );
   initializeGui();
   registerGuiParameter(
@@ -57,9 +56,9 @@ function main() {
       resetData(
         /** @type {number} */ (value),
         /** @type {number} */ (getGuiParameterValue('curveComplexity')),
-        /** @type {number} */ (getGuiParameterValue('width'))
+        /** @type {number} */ (getGuiParameterValue('width')),
       );
-    }
+    },
   );
   registerGuiParameter('width', 'Width', [1, 20, 1], 2, (value, initial) => {
     if (initial) {
@@ -68,7 +67,7 @@ function main() {
     resetData(
       /** @type {number} */ (getGuiParameterValue('count')),
       /** @type {number} */ (getGuiParameterValue('curveComplexity')),
-      /** @type {number} */ (value)
+      /** @type {number} */ (value),
     );
   });
   registerGuiParameter(
@@ -83,9 +82,9 @@ function main() {
       resetData(
         /** @type {number} */ (getGuiParameterValue('count')),
         /** @type {number} */ (value),
-        /** @type {number} */ (getGuiParameterValue('width'))
+        /** @type {number} */ (getGuiParameterValue('width')),
       );
-    }
+    },
   );
   registerGuiParameter(
     'dash',
@@ -99,13 +98,13 @@ function main() {
         delete style['stroke-line-dash'];
       }
       regenerateLayer();
-    }
+    },
   );
 
   resetData(
     /** @type {number} */ (getGuiParameterValue('count')),
     /** @type {number} */ (getGuiParameterValue('curveComplexity')),
-    /** @type {number} */ (getGuiParameterValue('width'))
+    /** @type {number} */ (getGuiParameterValue('width')),
   );
 }
 main();
