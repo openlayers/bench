@@ -19,11 +19,16 @@ const source = new VectorSource({
  */
 const style = {
   // This has to be fixed upstream
-  // @ts-ignore
   'circle-radius': ['get', 'radius'],
   'circle-fill-color': ['get', 'color'],
   'circle-stroke-color': 'gray',
   'circle-stroke-width': 0.5,
+  'text-value': ['get', 'label'],
+  'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
+  'text-fill-color': '#333',
+  'text-stroke-color': 'rgba(255,255,255,0.8)',
+  'text-stroke-width': 2,
+  'text-offset-y': -12,
 };
 
 /**

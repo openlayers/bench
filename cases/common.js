@@ -6,6 +6,7 @@ import {
   trackPerformance,
   // @ts-ignore
 } from '@camptocamp/rendering-analyzer';
+import randomName from '@scaleway/random-name';
 import lilGui from 'lil-gui';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -164,11 +165,13 @@ export function generatePolygons(count, numVertices) {
       // Close the polygon by adding the first vertex at the end
       polygonCoordinates.push(polygonCoordinates[0]);
 
+      const label = `This area covers ${randomName()}`;
       features.push({
         type: 'Feature',
         properties: {
           color: getRandomPaletteColor(),
           ratio: Math.round(Math.random() * 100),
+          label,
         },
         geometry: {
           type: 'Polygon',
@@ -197,11 +200,13 @@ export function generatePoints(count, radius) {
   for (let lon = -180; lon < 180 - size / 4; lon += size) {
     for (let lat = -90; lat < 90 - size / 4; lat += size) {
       const buffer = (0.3 + Math.random() * 0.2) * size * (radius / 5); // Increase the buffer for larger points
+      const label = randomName();
       features.push({
         type: 'Feature',
         properties: {
           color: getRandomPaletteColor(),
           radius,
+          label,
         },
         geometry: {
           type: 'Point',
@@ -254,11 +259,13 @@ export function generateLines(lineCount, curveComplexity, width) {
       }
       coordinates.push(...singleCurve);
     }
+    const label = `This leads to ${randomName()}`;
     features.push({
       type: 'Feature',
       properties: {
         color: getRandomPaletteColor(), // Use deterministic color selection
         width,
+        label,
       },
       geometry: {
         type: 'LineString',

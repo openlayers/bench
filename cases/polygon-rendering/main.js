@@ -20,6 +20,11 @@ const source = new VectorSource({
  */
 const style = {
   'fill-color': ['get', 'color'],
+  'text-value': ['get', 'label'],
+  'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
+  'text-fill-color': '#333',
+  'text-stroke-color': 'rgba(255,255,255,0.8)',
+  'text-stroke-width': 2,
 };
 
 /**
