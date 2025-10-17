@@ -34,7 +34,7 @@ function generateStyle() {
     defaultStylesCount;
 
   // use a single style rule for OpenLayers versions < 10.4.1
-  if (compareVersions(olVersion, '10.4.1') < 0) {
+  if (olVersion.match(/^[0-9]/) && compareVersions(olVersion, '10.4.1') < 0) {
     const colorExpr = [
       'match',
       ['get', 'propValue'],

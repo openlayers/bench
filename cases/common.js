@@ -285,7 +285,7 @@ const guiParams = {};
  * The `id` and `values` will show up in the url
  * @param {string} id Id
  * @param {string} label Label
- * @param {Array<string>|Array<number>} values Either two string values for true/false, or two numbers defining a range
+ * @param {Array<string>|Array<number>} values Either two string values for true/false, or two numbers defining a range + optional step value
  * @param {boolean|number|function(): void} defaultValue Default value
  * @param {function(boolean|number|function(): void, boolean|null): void} callback Called when the parameter changes, and also on initialization
  * First argument is the current value, second argument is true if this is the initial call
@@ -454,6 +454,7 @@ function animate() {
   }, 1000);
 }
 
+/** @type {string} */
 export const olVersion =
   new URL(window.location.href).searchParams.get('olVersion') ??
   // @ts-ignore
