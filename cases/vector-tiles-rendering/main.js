@@ -26,6 +26,21 @@ const format = new GeoJSON({featureProjection: 'EPSG:3857'});
 const defaultStylesCount = 10;
 
 /**
+ * @type {Array<import('ol/style/flat.js').Rule>}
+ */
+const textStyles = [
+  {
+    style: {
+      'text-value': ['get', 'label'],
+      'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
+      'text-fill-color': '#333',
+      'text-stroke-color': 'rgba(255,255,255,0.8)',
+      'text-stroke-width': 2,
+    },
+  },
+];
+
+/**
  * @type {function(): Array<import('ol/style/flat.js').Rule>|import('ol/style/flat.js').FlatStyle}
  */
 function generateStyle() {
@@ -61,7 +76,7 @@ function generateStyle() {
       'circle-stroke-width': 2,
     };
   }
-  return new Array(totalStylesCount).fill(0).map((_, i) => {
+  const colorStyles = new Array(totalStylesCount).fill(0).map((_, i) => {
     const color = getRandomColor();
     return {
       style: {
@@ -82,6 +97,9 @@ function generateStyle() {
       filter: ['==', ['get', 'propValue'], i],
     };
   });
+  return getGuiParameterValue('text')
+    ? [...colorStyles, ...textStyles]
+    : colorStyles;
 }
 
 /**
@@ -319,6 +337,18 @@ function main() {
       // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
       // @ts-ignore
       source.setKey(Date.now().toString());
+    },
+  );
+  registerGuiParameter(
+    'text',
+    'Show labels',
+    ['yes', 'no'],
+    false,
+    (value, initial) => {
+      if (initial) {
+        return;
+      }
+      regenerateLayer();
     },
   );
 }

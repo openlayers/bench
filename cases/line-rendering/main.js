@@ -16,13 +16,18 @@ const source = new VectorSource({
 });
 
 /**
- *
  * @type {import('ol/style/flat.js').FlatStyle}
  */
-const style = {
+const baseStyle = {
   'stroke-width': ['get', 'width'],
   'stroke-color': ['get', 'color'],
   'stroke-line-dash': [15, 15],
+};
+
+/**
+ * @type {import('ol/style/flat.js').FlatStyle}
+ */
+const textStyle = {
   'text-value': ['get', 'label'],
   'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
   'text-fill-color': '#333',
@@ -44,9 +49,15 @@ function resetData(lineCount, curveComplexity, width) {
 function main() {
   createMap(
     (map) => {
+      const style = getGuiParameterValue('text')
+        ? {...baseStyle, ...textStyle}
+        : baseStyle;
       map.addLayer(new WebGLVectorLayer({source, properties: {style}}));
     },
     (map) => {
+      const style = getGuiParameterValue('text')
+        ? {...baseStyle, ...textStyle}
+        : baseStyle;
       map.addLayer(new VectorLayer({source, style}));
     },
   );
@@ -54,8 +65,8 @@ function main() {
   registerGuiParameter(
     'count',
     'Line count',
-    [2, 100, 10],
-    2,
+    [2, 10000, 10],
+    10,
     (value, initial) => {
       if (initial) {
         return;
@@ -100,9 +111,21 @@ function main() {
     false,
     (value, initial) => {
       if (value) {
-        style['stroke-line-dash'] = [15, 15];
+        baseStyle['stroke-line-dash'] = [15, 15];
       } else {
-        delete style['stroke-line-dash'];
+        delete baseStyle['stroke-line-dash'];
+      }
+      regenerateLayer();
+    },
+  );
+  registerGuiParameter(
+    'text',
+    'Show labels',
+    ['yes', 'no'],
+    false,
+    (value, initial) => {
+      if (initial) {
+        return;
       }
       regenerateLayer();
     },

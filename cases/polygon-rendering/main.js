@@ -18,13 +18,25 @@ const source = new VectorSource({
 /**
  * @type {import('ol/style/flat.js').FlatStyle}
  */
-const style = {
+const baseStyle = {
   'fill-color': ['get', 'color'],
   'text-value': ['get', 'label'],
   'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
   'text-fill-color': '#333',
   'text-stroke-color': 'rgba(255,255,255,0.8)',
   'text-stroke-width': 2,
+};
+
+/**
+ * @type {import('ol/style/flat.js').FlatStyle}
+ */
+const textStyle = {
+  'text-value': ['get', 'label'],
+  'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
+  'text-fill-color': '#333',
+  'text-stroke-color': 'rgba(255,255,255,0.8)',
+  'text-stroke-width': 2,
+  'text-offset-y': -12,
 };
 
 /**
@@ -38,9 +50,15 @@ function resetData(count, numVertices) {
 function main() {
   createMap(
     (map) => {
+      const style = getGuiParameterValue('text')
+        ? {...baseStyle, ...textStyle}
+        : baseStyle;
       map.addLayer(new WebGLVectorLayer({source, properties: {style}}));
     },
     (map) => {
+      const style = getGuiParameterValue('text')
+        ? {...baseStyle, ...textStyle}
+        : baseStyle;
       map.addLayer(new VectorLayer({source, style}));
     },
   );
@@ -82,11 +100,23 @@ function main() {
     true,
     (value, initial) => {
       if (value) {
-        style['stroke-width'] = 2;
-        style['stroke-color'] = 'gray';
+        baseStyle['stroke-width'] = 2;
+        baseStyle['stroke-color'] = 'gray';
       } else {
-        delete style['stroke-width'];
-        delete style['stroke-color'];
+        delete baseStyle['stroke-width'];
+        delete baseStyle['stroke-color'];
+      }
+      regenerateLayer();
+    },
+  );
+  registerGuiParameter(
+    'text',
+    'Show labels',
+    ['yes', 'no'],
+    false,
+    (value, initial) => {
+      if (initial) {
+        return;
       }
       regenerateLayer();
     },
