@@ -1,13 +1,12 @@
 import {existsSync, readdirSync} from 'fs';
 import fs from 'fs/promises';
 import {join, resolve} from 'path';
-import {defineConfig} from 'vite';
-import {dependencies} from './package.json';
+import packageJson from './package.json' with {type: 'json'};
 
-const casesDir = resolve(__dirname, 'cases');
+const casesDir = resolve(import.meta.dirname, 'cases');
 
 const input = {
-  main: resolve(__dirname, 'index.html'),
+  main: resolve(import.meta.dirname, 'index.html'),
 };
 
 for (const name of readdirSync(casesDir)) {
@@ -93,15 +92,17 @@ const SUPPORTED_OL_VERSIONS = [
   '9.1.0',
   '9.0.0',
 ];
-const CURRENT_OL_VERSION = dependencies.ol;
+const CURRENT_OL_VERSION = packageJson.dependencies.ol;
 
-export default defineConfig({
+/** @type {import('vite').UserConfig} */
+export default {
   plugins: [putImportmapFirst(), addNodeModulesToDist()],
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       input,
       output: {
         esModule: true,
+        minify: {mangle: false},
       },
       external: [/^ol\//],
     },
@@ -117,7 +118,4 @@ export default defineConfig({
   optimizeDeps: {
     noDiscovery: true,
   },
-  esbuild: {
-    minifyIdentifiers: false,
-  },
-});
+};
