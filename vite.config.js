@@ -75,6 +75,12 @@ const addNodeModulesToDist = () => {
 // list of supported OL versions and current one
 const SUPPORTED_OL_VERSIONS = [
   'dev',
+  '10.9.0',
+  '10.8.0',
+  '10.7.2',
+  '10.7.1',
+  '10.7.0',
+  '10.6.1',
   '10.6.0',
   '10.5.0',
   '10.4.0',
