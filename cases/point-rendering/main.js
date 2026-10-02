@@ -7,6 +7,7 @@ import {
   generatePoints,
   getGuiParameterValue,
   initializeGui,
+  regenerateLayer,
   registerGuiParameter,
 } from '../common.js';
 
@@ -17,13 +18,24 @@ const source = new VectorSource({
 /**
  * @type {import('ol/style/flat.js').FlatStyle}
  */
-const style = {
+const baseStyle = {
   // This has to be fixed upstream
-  // @ts-ignore
   'circle-radius': ['get', 'radius'],
   'circle-fill-color': ['get', 'color'],
   'circle-stroke-color': 'gray',
   'circle-stroke-width': 0.5,
+};
+
+/**
+ * @type {import('ol/style/flat.js').FlatStyle}
+ */
+const textStyle = {
+  'text-value': ['get', 'label'],
+  'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
+  'text-fill-color': '#333',
+  'text-stroke-color': 'rgba(255,255,255,0.8)',
+  'text-stroke-width': 2,
+  'text-offset-y': -12,
 };
 
 /**
@@ -38,9 +50,15 @@ function resetData(count, radius) {
 function main() {
   createMap(
     (map) => {
+      const style = getGuiParameterValue('text')
+        ? {...baseStyle, ...textStyle}
+        : baseStyle;
       map.addLayer(new WebGLVectorLayer({source, properties: {style}}));
     },
     (map) => {
+      const style = getGuiParameterValue('text')
+        ? {...baseStyle, ...textStyle}
+        : baseStyle;
       map.addLayer(new VectorLayer({source, style}));
     },
   );
@@ -69,6 +87,18 @@ function main() {
       /** @type {number} */ (value),
     );
   });
+  registerGuiParameter(
+    'text',
+    'Show labels',
+    ['yes', 'no'],
+    false,
+    (value, initial) => {
+      if (initial) {
+        return;
+      }
+      regenerateLayer();
+    },
+  );
 
   resetData(
     /** @type {number} */ (getGuiParameterValue('count')),

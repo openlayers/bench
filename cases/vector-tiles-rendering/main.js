@@ -26,6 +26,21 @@ const format = new GeoJSON({featureProjection: 'EPSG:3857'});
 const defaultStylesCount = 10;
 
 /**
+ * @type {Array<import('ol/style/flat.js').Rule>}
+ */
+const textStyles = [
+  {
+    style: {
+      'text-value': ['get', 'label'],
+      'text-font': 'bold 12px "Open Sans", "Arial Unicode MS", sans-serif',
+      'text-fill-color': '#333',
+      'text-stroke-color': 'rgba(255,255,255,0.8)',
+      'text-stroke-width': 2,
+    },
+  },
+];
+
+/**
  * @type {function(): Array<import('ol/style/flat.js').Rule>|import('ol/style/flat.js').FlatStyle}
  */
 function generateStyle() {
@@ -34,7 +49,7 @@ function generateStyle() {
     defaultStylesCount;
 
   // use a single style rule for OpenLayers versions < 10.4.1
-  if (compareVersions(olVersion, '10.4.1') < 0) {
+  if (olVersion.match(/^[0-9]/) && compareVersions(olVersion, '10.4.1') < 0) {
     const colorExpr = [
       'match',
       ['get', 'propValue'],
@@ -61,7 +76,7 @@ function generateStyle() {
       'circle-stroke-width': 2,
     };
   }
-  return new Array(totalStylesCount).fill(0).map((_, i) => {
+  const colorStyles = new Array(totalStylesCount).fill(0).map((_, i) => {
     const color = getRandomColor();
     return {
       style: {
@@ -82,6 +97,9 @@ function generateStyle() {
       filter: ['==', ['get', 'propValue'], i],
     };
   });
+  return getGuiParameterValue('text')
+    ? [...colorStyles, ...textStyles]
+    : colorStyles;
 }
 
 /**
@@ -115,6 +133,7 @@ function makeData(
     (width + height) / 4 / (Math.ceil(Math.sqrt(countPoints)) + 1);
 
   // Generate polygons on the left bottom corner
+  let number = 1;
   for (let lon = bbox[0] + gridSpacing; lon < centerLon; lon += gridSpacing) {
     for (let lat = bbox[1] + gridSpacing; lat < centerLat; lat += gridSpacing) {
       const buffer = (0.3 + Math.random() * 0.2) * gridSpacing;
@@ -129,11 +148,13 @@ function makeData(
         polygonCoordinates.push([x, y]);
       }
       polygonCoordinates.push(polygonCoordinates[0]);
+      const label = `polygon n°${number++}`;
 
       features.push({
         type: 'Feature',
         properties: {
           propValue: propValues[Math.floor(Math.random() * propValues.length)],
+          label,
         },
         geometry: {
           type: 'Polygon',
@@ -148,6 +169,7 @@ function makeData(
     type: 'Feature',
     properties: {
       propValue: propValues[Math.floor(Math.random() * propValues.length)],
+      label: '',
     },
     geometry: {
       type: 'LineString',
@@ -162,14 +184,17 @@ function makeData(
   });
 
   // Generate points on the right top corner
+  number = 1;
   for (let lon = centerLon + gridSpacing; lon < bbox[2]; lon += gridSpacing) {
     for (let lat = bbox[1] + gridSpacing; lat < centerLat; lat += gridSpacing) {
       const point = [lon, lat];
+      const label = `point n°${number++}`;
 
       features.push({
         type: 'Feature',
         properties: {
           propValue: propValues[Math.floor(Math.random() * propValues.length)],
+          label,
         },
         geometry: {
           type: 'Point',
@@ -190,6 +215,7 @@ function makeData(
    */
   let singleCurve = []; // Create a singleCurve array outside the loop
 
+  number = 1;
   for (let j = 0; j < countLines; j++) {
     const coordinates = [];
     for (let i = 0; i < periodCount; i++) {
@@ -207,11 +233,13 @@ function makeData(
       }
       coordinates.push(...singleCurve);
     }
+    const label = `line n°${number++}`;
 
     features.push({
       type: 'Feature',
       properties: {
         propValue: propValues[Math.floor(Math.random() * propValues.length)],
+        label,
       },
       geometry: {
         type: 'LineString',
@@ -309,6 +337,18 @@ function main() {
       // workaround required for webgl renderer; see https://github.com/openlayers/openlayers/issues/15213
       // @ts-ignore
       source.setKey(Date.now().toString());
+    },
+  );
+  registerGuiParameter(
+    'text',
+    'Show labels',
+    ['yes', 'no'],
+    false,
+    (value, initial) => {
+      if (initial) {
+        return;
+      }
+      regenerateLayer();
     },
   );
 }
